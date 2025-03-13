@@ -36,7 +36,7 @@ create procedure pr_insert_price(_inv_id int, _prod_id int, _purchase float, _sa
         if _current = true then
             update prices
             set current = false
-            where inv_id = _inv_id and prod_id = _prod_id;
+            where prod_id = _prod_id;
         end if;
 
         insert into prices(inv_id, prod_id, purchase, sale, current)
@@ -70,7 +70,7 @@ create procedure pr_insert_sale(_date date, _description text, _quantity int, _o
         if trim(_description) = '' then _description := null; end if;
 
         insert into sales("date", "description", quantity, other_price, inv_id, prod_id, cust_id)
-        values(_date, _descripton, _quantity, _other_price, _inv_id, _prod_id, _cust_id);
+        values(_date, _description, _quantity, _other_price, _inv_id, _prod_id, _cust_id);
 
         call pr_insert_receivable(_received, _date, _cust_id);
     end;
