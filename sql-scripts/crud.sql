@@ -69,3 +69,20 @@ call pr_insert_sale(
 
 select * from sales;
 select * from receivables;
+
+select
+    c.id,
+    c.name,
+    c.phone,
+    s."date",
+    p.name,
+    s.quantity,
+    pr.purchase,
+    pr.sale,
+    r."date",
+    r.received
+from customers as c 
+join sales as s on s.cust_id = c.id
+join products as p on p.id = s.prod_id
+join prices as pr on pr.inv_id = s.inv_id
+join receivables as r on r.cust_id = c.id;
