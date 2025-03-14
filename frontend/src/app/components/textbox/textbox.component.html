@@ -1,4 +1,4 @@
 <fieldset>
     <legend>{{caption}}</legend>
-    <input type="text" [value]="value" (input)="notify($event)" (blur)="onTouched()">
+    <input type="text" [value]="value" (input)="input($event)" (blur)="touched()">
 </fieldset>

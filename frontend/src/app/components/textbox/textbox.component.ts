@@ -1,5 +1,6 @@
 import { Component, forwardRef, HostListener, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { VAccessorDirective } from '../utils/v-accessor.directive';
 
 @Component({
   selector: 'textbox',
@@ -12,29 +13,5 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   templateUrl: './textbox.component.html',
   styleUrl: './textbox.component.scss'
 })
-export class TextboxComponent implements ControlValueAccessor {
-  @Input() caption!: string;
-  value: string | null = null;
-
-  onChange = (value: string) => { }
-  onTouched = () => { }
-
-  writeValue(v: string): void {
-    this.value = v;
-  }
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-  setDisabledState?(isDisabled: boolean): void {
-    /// TODO
-  }
-
-  notify(input: Event) {
-    this.value = (<HTMLInputElement>input.target).value;
-    this.onChange(this.value);
-    this.onTouched();
-  }
+export class TextboxComponent extends VAccessorDirective {
 }
