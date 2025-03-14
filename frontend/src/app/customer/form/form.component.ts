@@ -3,10 +3,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TextboxComponent } from '../../components/textbox/textbox.component';
 import { EmailboxComponent } from '../../components/emailbox/emailbox.component';
 import { RichtextComponent } from '../../components/richtext/richtext.component';
+import { MainFormComponent } from "../../components/form/form.component";
 
 @Component({
   selector: 'app-form',
-  imports: [ReactiveFormsModule, TextboxComponent, EmailboxComponent, RichtextComponent],
+  imports: [ReactiveFormsModule, TextboxComponent, EmailboxComponent, RichtextComponent, MainFormComponent],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss'
 })

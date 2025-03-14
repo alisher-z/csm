@@ -1,13 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { MainService } from '../components/main.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CustomerService {
-  private http = inject(HttpClient);
-
-  get() {
-    return this.http.get('http://localhost:3000/customer');
-  }
+export class CustomerService extends MainService {
+  protected override path = 'customer';
 }

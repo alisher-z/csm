@@ -1,12 +1,10 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
-    <header>Customer</header>
-    <section>
+<main-form [formGroup]="form" (send)="submit()">
+    <ng-container header>Customer Form</ng-container>
+
+    <ng-container body>
         <textbox caption="Name" formControlName="name" />
         <textbox caption="Phone" formControlName="phone" />
         <emailbox caption="Email" formControlName="email" />
         <richtext caption="Address" formControlName="address" />
-    </section>
-    <footer>
-        <button type="submit">Submit</button>
-    </footer>
-</form>
+    </ng-container>
+</main-form>

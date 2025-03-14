@@ -1,0 +1,81 @@
+@use "sass:color";
+
+:host {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(1px);
+    background-color: rgba(#333, .2);
+}
+
+
+form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 350px;
+    padding: 25px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px rgba(black, .5);
+    background-color: #fff;
+}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px 10px;
+    padding-right: 7px;
+    text-transform: uppercase;
+
+    svg {
+        transition: all .3s;
+
+        &:hover {
+            cursor: pointer;
+            fill: red;
+            scale: 1.2;
+
+            path {
+                stroke-width: 50px;
+                stroke: red;
+            }
+
+        }
+    }
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+footer {
+    display: flex;
+    justify-content: end;
+
+    button {
+        padding: 7px 15px;
+        border-radius: 3px;
+        border: none;
+        box-shadow: 1px 1px 3px rgba(black, .4);
+        transition: all .3s ease;
+
+        &:hover {
+            background-color: color.scale(#e4e3e3, $lightness: -10%);
+            cursor: pointer;
+        }
+    }
+}

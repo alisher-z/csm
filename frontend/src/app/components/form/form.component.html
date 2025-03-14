@@ -1,0 +1,17 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <header>
+        <h3> <ng-content select="[header]"></ng-content> </h3>
+        <svg viewBox="0 -960 960 960">
+            <path
+                d="m256-236-20-20 224-224-224-224 20-20 224 224 224-224 20 20-224 224 224 224-20 20-224-224-224 224Z" />
+        </svg>
+    </header>
+
+    <section>
+        <ng-content select="[body]"></ng-content>
+    </section>
+
+    <footer>
+        <button type="submit">Submit</button>
+    </footer>
+</form>
