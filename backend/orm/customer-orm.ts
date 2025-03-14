@@ -18,13 +18,11 @@ export async function get() {
     }
 }
 export async function insert(data: Customer) {
-    console.log(data);
-    return null;
-    // try {
-    //     await db.query(`pr_insert_customer(${JSON.stringify(data)})`);
-    //     return { success: 'good' };
-    // } catch (error) {
-    //     console.log(error);
-    //     return { error: 'something is wrong!' };
-    // }
+    try {
+        await db.query(`call pr_insert_customer('${JSON.stringify(data)}')`);
+        return { success: 'good' };
+    } catch (error) {
+        console.log(error);
+        return { error: 'something is wrong!' };
+    }
 }

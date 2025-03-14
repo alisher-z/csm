@@ -4,6 +4,7 @@ import { TextboxComponent } from '../../components/textbox/textbox.component';
 import { EmailboxComponent } from '../../components/emailbox/emailbox.component';
 import { RichtextComponent } from '../../components/richtext/richtext.component';
 import { MainFormComponent } from "../../components/form/form.component";
+import { CustomerService } from '../customer.service';
 
 @Component({
   selector: 'app-form',
@@ -13,7 +14,9 @@ import { MainFormComponent } from "../../components/form/form.component";
 })
 export class CustomerFormComponent {
   fb = inject(FormBuilder);
+  service = inject(CustomerService);
   form: FormGroup;
+
 
   constructor() {
     this.form = this.fb.group({
@@ -25,6 +28,6 @@ export class CustomerFormComponent {
   }
 
   submit() {
-    console.log(this.form.value);
+    this.service.insert(this.form.value).subscribe();
   }
 }
