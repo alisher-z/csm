@@ -22,6 +22,28 @@ create procedure pr_insert_customer(_name varchar, _phone varchar, _email varcha
     end;
 $$;
 
+create procedure pr_insert_customer(customer jsonb) language plpgsql as $$
+    declare
+        _name varchar;
+        _phone varchar;
+        _email varchar;
+        _address varchar;
+
+    begin
+        _name := customer->>'name';
+        _phone := customer->>'phone';
+        _email := customer->>'email';
+        _address := customer->>'address';
+
+        if trim(_phone) = '' then _phone := null; end if;
+        if trim(_email) = '' then _email := null; end if;
+        if trim(_address) = '' then _address := null; end if;
+
+        insert into customers(name, phone, email, address)
+        values(_name, _phone, _email, _address);
+    end;
+$$;
+
 create procedure pr_insert_product(_name varchar, _description text) language plpgsql as $$
     begin
         if trim(_description) = '' then _description := null; end if;
