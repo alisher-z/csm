@@ -1,0 +1,15 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <header>Customer</header>
+    <section>
+        <textbox caption="Name" formControlName="name" />
+        <textbox caption="Phone" formControlName="phone" />
+        <emailbox caption="Email" formControlName="email" />
+        <fieldset>
+            <legend>Address</legend>
+            <textarea></textarea>
+        </fieldset>
+    </section>
+    <footer>
+        <button type="submit">Submit</button>
+    </footer>
+</form>

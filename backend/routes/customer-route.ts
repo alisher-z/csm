@@ -6,6 +6,7 @@ const router = Router();
 router
     .get('/', async (req, res) => {
         const result = await get();
+        console.log('requested')
         res.send(result);
     })
     .post('/', async (req, res) => {

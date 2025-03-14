@@ -1,10 +1,12 @@
 import express from 'express';
+import cors from 'cors';
 import pool from './db';
 import customerRouter from './routes/customer-route';
 
 const app = express();
 const PORT = 3000;
 
+app.use(cors());
 app.use('/customer', customerRouter);
 app.get('/', async (req, res) => {
     const data = await pool.query('select * from fn_get_products()');
