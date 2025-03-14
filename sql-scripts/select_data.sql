@@ -71,3 +71,20 @@ as $$
 $$;
 
 select * from fn_get_products();
+
+select * from sales;
+select
+    c.id,
+    c.name,
+    sum(s.quantity)
+from customers as c
+join sales as s on s.cust_id = c.id;
+
+select
+    s.cust_id,
+    s.prod_id,
+    s.quantity,
+    pr.sale
+from sales as s
+join prices as pr
+on pr.inv_id = s.inv_id and pr.prod_id = s.prod_id;
