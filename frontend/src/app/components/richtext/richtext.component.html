@@ -1,4 +1,5 @@
-<fieldset>
-    <legend>{{caption}}</legend>
-    <textarea [value]="value" (input)="input($event)" (blur)="touched()"></textarea>
-</fieldset>
+<label>
+    {{caption}}
+    <span>&colon;</span>
+</label>
+<textarea [value]="value" (input)="input($event)" (blur)="touched()"></textarea>

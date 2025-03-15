@@ -1,4 +1,5 @@
-<fieldset>
-    <legend>{{caption}}</legend>
-    <input type="email" [value]="value" (input)="input($event)" (blur)="touched()">
-</fieldset>
+<label>
+    {{caption}}
+    <span>&colon;</span>
+</label>
+<input type="email" [value]="value" (input)="input($event)" (blur)="touched()">

@@ -5,6 +5,7 @@ import { EmailboxComponent } from '../../components/emailbox/emailbox.component'
 import { RichtextComponent } from '../../components/richtext/richtext.component';
 import { MainFormComponent } from "../../components/form/form.component";
 import { CustomerService } from '../customer.service';
+import { MainFormService } from '../../components/form/form.service';
 
 @Component({
   selector: 'app-form',
@@ -15,12 +16,14 @@ import { CustomerService } from '../customer.service';
 export class CustomerFormComponent {
   fb = inject(FormBuilder);
   service = inject(CustomerService);
+  formService = inject(MainFormService);
   form: FormGroup;
 
 
   constructor() {
+    this.formService.close.set('../');
     this.form = this.fb.group({
-      name: [],
+      name: [null, [Validators.required, Validators.minLength(5)]],
       phone: [],
       email: [],
       address: []
