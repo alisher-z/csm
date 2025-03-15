@@ -35,7 +35,16 @@ a {
 }
 
 .ng-touched.ng-invalid {
-    input {
-        border-color: rgba(#fd367e, .9);
+    &>label {
+        color: rgba(#fd367e, 1);
+        font-weight: 500;
+    }
+
+    &>input {
+        border-color: rgba(#fd367e, .7);
+
+        &:focus {
+            border-color: rgba(#fd367e, .95);
+        }
     }
 }

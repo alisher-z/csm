@@ -23,7 +23,7 @@ export class CustomerFormComponent {
   constructor() {
     this.formService.close.set('../');
     this.form = this.fb.group({
-      name: [null, [Validators.required, Validators.minLength(5)]],
+      name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],
       phone: [],
       email: [],
       address: []
