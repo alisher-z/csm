@@ -16,7 +16,7 @@ export abstract class DBQuery {
 
     protected async getProcedureQuery(fn: string, params: any) {
         await db.query(`${fn}('${params}')`);
-        return { message: 'success!' };
+        return 'success!';
     }
     protected async getFunctionQuery(fn: string, params?: any) {
         const qrySt = params
@@ -29,39 +29,39 @@ export abstract class DBQuery {
 
     protected async attempt(result: any) {
         try {
-            return getResult(result, true);
+            return new DBResult(result);
         } catch (error) {
-            return getResult(error, false);
+            return new DBResult(error, true);
         }
     }
 }
 
 export abstract class MainORM extends DBQuery {
 
-    async list() {
+    async list(): Promise<DBResult> {
         const result = this.getFunctionQuery(this.selectString);
         return await (this.attempt(result));
     }
 }
 
+export class DBResult {
+    constructor(private _data: any, private _error = false) { }
 
-function getResult(data: any, isSuccess: boolean): DBResultType {
-    if (isSuccess)
-        return { success: getSuccess(data) }
-
-    return { error: getError(data) };
-}
-
-function getSuccess(data: any): DBMessageType {
-    return {
-        message: data,
-        status: 200
+    get success(): any | null {
+        return this._error
+            ? null
+            : this._data;
     }
-}
-function getError(err: any): DBMessageType {
-    console.log(err);
-    return {
-        message: 'something is wrong with db',
-        status: 404
+
+    get error() {
+        if (!this._error)
+            return null;
+
+        console.log(this._data);
+        return 'something went wrong with db!';
+    }
+
+    get status() {
+        return this._error ? 400 : 200;
     }
 }

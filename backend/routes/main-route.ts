@@ -1,4 +1,5 @@
-import { Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
+import { MainORM } from "../orm/main.orm";
 
 const router = Router();
 
@@ -18,6 +19,15 @@ router
 
         return res.send({ hello: 'world' })
     })
-    .get('/', (req, res): any => {
 
+    .get('/', async (req, res): Promise<any> => {
+        const model: MainORM = (<any>req).model;
+        const { status, error, success } = await model.list()
+
+        res.status(status);
+
+        if (error)
+            return res.send(error);
+
+        res.send(success);
     })

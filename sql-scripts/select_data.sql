@@ -88,3 +88,20 @@ select
 from sales as s
 join prices as pr
 on pr.inv_id = s.inv_id and pr.prod_id = s.prod_id;
+
+create function fn_list_customer()
+returns table(
+    id int,
+    name varchar,
+    phone varchar,
+    email varchar
+) language plpgsql
+as $$
+    begin
+        return query
+        select c.id, c.name, c.phone, c.email
+        from customers as c;
+    end;
+$$;
+
+SELECT * from fn_list_customer()

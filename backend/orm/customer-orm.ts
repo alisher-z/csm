@@ -1,6 +1,7 @@
 import db from '../db';
+import { MainORM } from './main.orm';
 
-export interface Customer {
+export interface ICustomer {
     id: number;
     name: string;
     phone: string;
@@ -17,7 +18,7 @@ export async function get() {
         return { error: 'something is wrong!' };
     }
 }
-export async function insert(data: Customer) {
+export async function insert(data: ICustomer) {
     try {
         await db.query(`call pr_insert_customer('${JSON.stringify(data)}')`);
         return { success: 'good' };
@@ -25,4 +26,8 @@ export async function insert(data: Customer) {
         console.log(error);
         return { error: 'something is wrong!' };
     }
+}
+
+export class Customer extends MainORM {
+    protected model: string = 'customer';
 }
