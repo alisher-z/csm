@@ -1,3 +1,6 @@
+import db from '../db';
+import { DBResultType, DBMessageType } from '../types/db-types';
+
 export abstract class MainORM {
     protected abstract insert: string;
 
@@ -6,17 +9,24 @@ export abstract class MainORM {
     }
 }
 
-type DBMessageType = { message: string, status: number };
-type DBResultType = {
-    success: DBMessageType | null,
-    status: DBMessageType | null
+
+function getResult(data: any, isSuccess: boolean): DBResultType {
+    if (isSuccess)
+        return { success: getSuccess(data) }
+
+    return { error: getError(data) };
 }
 
-function query(qry: string, params: any) {
-    let result: IDBResult;
-    try {
-
-    } catch (error) {
-
+function getSuccess(data: any): DBMessageType {
+    return {
+        message: data,
+        status: 200
+    }
+}
+function getError(err: any): DBMessageType {
+    console.log(err);
+    return {
+        message: 'something is wrong with db',
+        status: 404
     }
 }
