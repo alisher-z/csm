@@ -105,3 +105,17 @@ as $$
 $$;
 
 SELECT * from fn_list_customer()
+
+create Function fn_one_customer(id int)
+returns table(
+    id int,
+    "name" varchar,
+    phone varchar,
+    email varchar,
+    address text
+) language plpgsql
+as $$
+    begin
+        retur
+    end;
+$$;

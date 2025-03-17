@@ -1,33 +1,42 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { MainORM } from "../orm/main.orm";
+import { DBResult, MainORM } from "../orm/main.orm";
 
+let model: MainORM;
 const router = Router();
 
 router
-    .get('/:id', (req, res): any => {
-        let id: number = -1;
-        if (req.params)
-            id = +req.params.id;
-
-        if (isNaN(id))
-            return res
-                .status(400)
-                .send({ error: 'bad request' });
-
-        if (id < 1)
-            return res.send({ initial: 'success' });
-
-        return res.send({ hello: 'world' })
+    .use((req, _, next) => {
+        model = (<any>req)['model'];
+        next();
     })
 
-    .get('/', async (req, res): Promise<any> => {
-        const model: MainORM = (<any>req).model;
-        const { status, error, success } = await model.list()
+    .get('/:id', firstInit, (req, res): any => {
+
+    })
+
+    .get('/', (req, res, next) => {
+        (<any>req)['result'] = model.list();
+        next()
+    })
+
+    .use(async (req, res) => {
+        const { status, error, success }: DBResult = await (<any>req).result;
 
         res.status(status);
+        console.log(await success);
+        res.send(error ?? await success);
+    });
 
-        if (error)
-            return res.send(error);
+export default router;
 
-        res.send(success);
-    })
+function firstInit(req: Request, res: Response, next: NextFunction): any {
+    const id: number = req.params ? +req.params.id : -1;
+
+    if (isNaN(id))
+        return res.status(400).send({ error: 'bad request' });
+
+    if (id < 1)
+        return res.send({ success: 'success' });
+
+    next();
+}
