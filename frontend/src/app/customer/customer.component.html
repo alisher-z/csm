@@ -1,2 +1,13 @@
-<p>customer works!</p>
 <router-outlet />
+<gridview [data]="customers" (edit)="edit($event)">
+    <ng-container>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+    </ng-container>
+    <ng-template #row let-item>
+        <td>{{item.name}}</td>
+        <td>{{item.phone}}</td>
+        <td>{{item.email}}</td>
+    </ng-template>
+</gridview>

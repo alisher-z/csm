@@ -6,6 +6,7 @@
     left: 0;
     height: 100vh;
     width: 100vw;
+    z-index: 2;
 
     display: flex;
     align-items: center;
@@ -100,6 +101,14 @@ footer {
         &:hover {
             background-color: color.scale(#e4e3e3, $lightness: -10%);
             cursor: pointer;
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+
+            &:hover {
+                background: linear-gradient(90deg, rgba(#5c5470, .87), rgba(#5c5470, .83));
+            }
         }
     }
 }

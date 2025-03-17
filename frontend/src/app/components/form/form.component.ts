@@ -16,6 +16,10 @@ export class MainFormComponent {
   service = inject(MainFormService);
 
   submit() {
+    this.form.markAllAsTouched()
+    if (this.form.invalid)
+      return;
+
     this.send.emit();
   }
   get close() {

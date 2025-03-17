@@ -19,15 +19,17 @@
     font-size: 15px;
 }
 
+body {
+    background: rgba(#352f44, 1);
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
 svg {
-    fill: black;
+    fill: var(--white);
     height: 25px;
     width: 25px;
-
-    path {
-        stroke-width: 10px;
-        stroke: black;
-    }
 }
 
 a {
@@ -47,4 +49,25 @@ a {
             border-color: rgba(#fd367e, .95);
         }
     }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--black);
+    border: 1px solid rgba(#fff, .1);
+    // border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray);
+    border-radius: 10px;
+    // border: 3px solid rgba(#f1f1f1, .2);
+    border: 2px solid var(--black);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

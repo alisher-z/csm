@@ -1,17 +1,33 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, linkedSignal, OnInit, ResourceStatus, WritableSignal } from '@angular/core';
 import { CustomerService } from './customer.service';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
+import { GridviewComponent } from '../components/gridview/gridview.component';
 
 @Component({
   selector: 'app-customer',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, GridviewComponent],
   templateUrl: './customer.component.html',
   styleUrl: './customer.component.scss'
 })
 export class CustomerComponent implements OnInit {
   service = inject(CustomerService);
+  route = inject(Router);
+  customers: WritableSignal<any[] | undefined>;
+  // customer: WritableSignal<any | undefined>;
+
+  constructor() {
+    this.customers = this.service.list.value;
+    // this.customer = this.service.one.value;
+    // effect(() => console.log(this.customer()));
+  }
 
   ngOnInit(): void {
-    // this.service.getAll().subscribe((data) => console.log(data));
+    // this.service.test();
+  }
+
+  edit(id: number) {
+    this.service.id.set('hello');
+    console.log(this.service.id())
+    this.route.navigate(['customer', 'form', id]);
   }
 }

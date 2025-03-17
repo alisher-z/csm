@@ -10,6 +10,9 @@ export const routes: Routes = [
             {
                 path: 'form',
                 component: CustomerFormComponent
+            }, {
+                path: 'form/:id',
+                component: CustomerFormComponent
             }
         ]
     }
