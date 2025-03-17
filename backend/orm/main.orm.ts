@@ -10,6 +10,9 @@ export abstract class DBQuery {
     protected get updateString() {
         return `call pr_update_${this.model}`;
     }
+    protected get deleteString() {
+        return `call pr_delete_${this.model}`
+    }
     protected get listString() {
         return `select * from fn_list_${this.model}`;
     }

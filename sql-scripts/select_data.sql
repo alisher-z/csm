@@ -106,7 +106,7 @@ $$;
 
 SELECT * from fn_list_customer()
 
-create Function fn_one_customer(id int)
+create Function fn_one_customer(_id int)
 returns table(
     id int,
     "name" varchar,
@@ -116,6 +116,9 @@ returns table(
 ) language plpgsql
 as $$
     begin
-        retur
+        return query
+        select * from customers where customers.id = _id;
     end;
 $$;
+
+SELECT * from fn_one_customer(1);
