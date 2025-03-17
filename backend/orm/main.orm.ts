@@ -1,11 +1,46 @@
 import db from '../db';
 import { DBResultType, DBMessageType } from '../types/db-types';
 
-export abstract class MainORM {
-    protected abstract insert: string;
+export abstract class DBQuery {
+    protected abstract model: string;
 
-    list() {
+    protected get insertString() {
+        return `call pr_insert_${this.model}`;
+    }
+    protected get updateString() {
+        return `call pr_update_${this.model}`;
+    }
+    protected get selectString() {
+        return `select * from fn_list_${this.model}`;
+    }
 
+    protected async getProcedureQuery(fn: string, params: any) {
+        await db.query(`${fn}('${params}')`);
+        return { message: 'success!' };
+    }
+    protected async getFunctionQuery(fn: string, params?: any) {
+        const qrySt = params
+            ? `${this.selectString}('${params}')`
+            : `${this.selectString}()`;
+
+        const result = await db.query(qrySt);
+        return result.rows;
+    }
+
+    protected async attempt(result: any) {
+        try {
+            return getResult(result, true);
+        } catch (error) {
+            return getResult(error, false);
+        }
+    }
+}
+
+export abstract class MainORM extends DBQuery {
+
+    async list() {
+        const result = this.getFunctionQuery(this.selectString);
+        return await (this.attempt(result));
     }
 }
 

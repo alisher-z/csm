@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import pool from './db';
 import customerRouter from './routes/customer-route';
-
+import { run } from './test';
+run();
 const app = express();
 const PORT = 3000;
 
