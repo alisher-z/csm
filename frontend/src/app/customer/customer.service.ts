@@ -6,5 +6,6 @@ import { MainService } from '../components/main.service';
 })
 export class CustomerService extends MainService {
   protected override path = 'customer';
-  id = signal<string>('-1')
+  id = signal<number>(-1)
+  data = signal<any>({ init: -1 });
 }

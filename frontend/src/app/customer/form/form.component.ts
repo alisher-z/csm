@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextboxComponent } from '../../components/textbox/textbox.component';
 import { EmailboxComponent } from '../../components/emailbox/emailbox.component';
@@ -22,19 +22,23 @@ export class CustomerFormComponent implements OnInit {
 
   form!: FormGroup;
   customerId!: string | null;
+  customer!: WritableSignal<any | undefined>;
 
 
   constructor() {
     this.setCustomerID();
     this.buildForm();
     this.setFormPath();
+    this.customer = this.service.one.value;
+
+    effect(() => console.log(this.customer()))
   }
 
   ngOnInit(): void {
   }
 
   submit() {
-    this.service.insert(this.form.value).subscribe();
+    this.service.data.set(this.form.value);
   }
 
   setCustomerID() {

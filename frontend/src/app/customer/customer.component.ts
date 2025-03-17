@@ -13,21 +13,16 @@ export class CustomerComponent implements OnInit {
   service = inject(CustomerService);
   route = inject(Router);
   customers: WritableSignal<any[] | undefined>;
-  // customer: WritableSignal<any | undefined>;
 
   constructor() {
     this.customers = this.service.list.value;
-    // this.customer = this.service.one.value;
-    // effect(() => console.log(this.customer()));
   }
 
   ngOnInit(): void {
-    // this.service.test();
   }
 
   edit(id: number) {
-    this.service.id.set('hello');
-    console.log(this.service.id())
+    this.service.id.set(id);
     this.route.navigate(['customer', 'form', id]);
   }
 }

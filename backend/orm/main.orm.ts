@@ -10,26 +10,34 @@ export abstract class DBQuery {
     protected get updateString() {
         return `call pr_update_${this.model}`;
     }
-    protected get selectString() {
+    protected get listString() {
         return `select * from fn_list_${this.model}`;
+    }
+    protected get oneString() {
+        return `select * from fn_one_${this.model}`;
     }
 
     protected async getProcedureQuery(fn: string, params: any) {
-        await db.query(`${fn}('${params}')`);
-        return 'success!';
+        await db.query(`${fn}('${JSON.stringify(params)}')`);
+        return { message: 'success' };
     }
+
     protected async getFunctionQuery(fn: string, params?: any) {
         const qrySt = params
-            ? `${this.selectString}('${params}')`
-            : `${this.selectString}()`;
+            ? `${fn}('${params}')`
+            : `${fn}()`;
 
-        const result = await db.query(qrySt);
-        return result.rows;
+        const { rows } = await db.query(qrySt);
+
+        if (rows.length === 1)
+            return rows[0]
+
+        return rows;
     }
 
-    protected async attempt(result: any) {
+    protected async attempt(result: Promise<any>) {
         try {
-            return new DBResult(result);
+            return new DBResult(await result);
         } catch (error) {
             return new DBResult(error, true);
         }
@@ -39,7 +47,16 @@ export abstract class DBQuery {
 export abstract class MainORM extends DBQuery {
 
     async list(): Promise<DBResult> {
-        const result = this.getFunctionQuery(this.selectString);
+        const result = this.getFunctionQuery(this.listString);
+        return await (this.attempt(result));
+    }
+
+    async one(id: number): Promise<DBResult> {
+        const result = this.getFunctionQuery(this.oneString, id);
+        return await (this.attempt(result));
+    }
+    async insert(data: any) {
+        const result = this.getProcedureQuery(this.insertString, data);
         return await (this.attempt(result));
     }
 }

@@ -10,8 +10,10 @@ router
         next();
     })
 
-    .get('/:id', firstInit, (req, res): any => {
+    .get('/:id', firstInit, (req, res, next): any => {
+        (<any>req)['result'] = model.one(+req.params.id);
 
+        next();
     })
 
     .get('/', (req, res, next) => {
@@ -19,24 +21,32 @@ router
         next()
     })
 
+    .post('/', firstInit, (req, _, next) => {
+        (<any>req)['result'] = model.insert(req.body);
+        next();
+    })
+
     .use(async (req, res) => {
         const { status, error, success }: DBResult = await (<any>req).result;
 
         res.status(status);
-        console.log(await success);
-        res.send(error ?? await success);
+        res.send(error ?? success);
     });
 
 export default router;
 
 function firstInit(req: Request, res: Response, next: NextFunction): any {
-    const id: number = req.params ? +req.params.id : -1;
+    const data = getInitData(req);
 
-    if (isNaN(id))
-        return res.status(400).send({ error: 'bad request' });
-
-    if (id < 1)
-        return res.send({ success: 'success' });
+    if (data < 1)
+        return res.send({ message: 'success' });
 
     next();
+}
+
+function getInitData({ method, params, body }: Request) {
+    if (method === 'POST')
+        return +body.init;
+
+    return +params.id;
 }
