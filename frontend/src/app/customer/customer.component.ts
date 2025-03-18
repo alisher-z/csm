@@ -16,6 +16,7 @@ export class CustomerComponent extends GridviewDirective {
   override service = inject(CustomerService);
   override gridService = inject(GridviewService);
   override formPath = ['customer', 'form'];
+  override formUrl = ['customer', 'form'];
 
   constructor() {
     super();

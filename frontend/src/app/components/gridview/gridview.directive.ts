@@ -9,6 +9,7 @@ export abstract class GridviewDirective {
   abstract service: MainService;
   abstract gridService: GridviewService;
   abstract formPath: string[];
+  abstract formUrl: string[];
 
   constructor() { }
 

@@ -11,15 +11,16 @@ router
     })
 
     .get('/:id', firstInit, (req, res, next): any => {
-        (<any>req)['result'] = model.one(+req.params.id);
+        // (<any>req)['result'] = model.one(+req.params.id);
 
-        next();
+        // next();
+        res.send({ hi: 'hi' });
     })
 
     .get('/', (req, res, next) => {
-        (<any>req)['result'] = model.list();
-        console.log(req.query)
-        next()
+        // (<any>req)['result'] = model.list();
+        // next()
+        res.send({ hi: 'hello' });
     })
 
     .post('/', (req, _, next) => {
@@ -35,7 +36,7 @@ router
         next();
     })
 
-    .delete('/:id', firstInit, (req, _, next) => {
+    .delete('/:id', (req, _, next) => {
         (<any>req)['result'] = model.delete(+req.params.id);
         next();
     })
@@ -50,17 +51,7 @@ router
 export default router;
 
 function firstInit(req: Request, res: Response, next: NextFunction): any {
-    const data = getInitData(req);
-
-    if (data < 1)
-        return res.send({ message: 'success' });
-
-    next();
-}
-
-function getInitData({ method, params, body }: Request) {
-    if (method === 'POST')
-        return +body.init;
-
-    return +params.id;
+    +req.params.id < 1
+        ? res.send({ success: 'success' })
+        : next();
 }
