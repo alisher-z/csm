@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AppService } from './app.service';
 
@@ -8,16 +8,8 @@ import { AppService } from './app.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   service = inject(AppService);
   title = 'frontend';
-
-  // get formUrl() {
-  //   console.log(this.formUrl)
-  //   return this.service.formUrl;
-  // }
-
-  ngOnInit(): void {
-    // console.log(this.service.formUrl)
-  }
+  formUrl = computed(() => this.service.formUrl());
 }

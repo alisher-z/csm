@@ -11,16 +11,14 @@ router
     })
 
     .get('/:id', firstInit, (req, res, next): any => {
-        // (<any>req)['result'] = model.one(+req.params.id);
+        (<any>req)['result'] = model.one(+req.params.id);
 
-        // next();
-        res.send({ hi: 'hi' });
+        next();
     })
 
     .get('/', (req, res, next) => {
-        // (<any>req)['result'] = model.list();
-        // next()
-        res.send({ hi: 'hello' });
+        (<any>req)['result'] = model.list();
+        next()
     })
 
     .post('/', (req, _, next) => {
