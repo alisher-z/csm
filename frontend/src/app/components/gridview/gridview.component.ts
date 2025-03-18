@@ -10,6 +10,7 @@ import { Component, ContentChild, EventEmitter, Input, Output, resource, Templat
 export class GridviewComponent {
   @Input() data!: WritableSignal<any[] | undefined>;
   @Output('edit') _edit = new EventEmitter<number>();
+  @Output('delete') _drop = new EventEmitter<number>();
   @ContentChild('row') row: TemplateRef<any> | null = null;
   isControl = true;
 
@@ -18,5 +19,8 @@ export class GridviewComponent {
   }
   edit(id: number) {
     this._edit.emit(id);
+  }
+  drop(id: number) {
+    this._drop.emit(id);
   }
 }

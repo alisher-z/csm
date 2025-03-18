@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, WritableSignal } from '@angular/core';
+import { Component, effect, inject, OnInit, Signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextboxComponent } from '../../components/textbox/textbox.component';
 import { EmailboxComponent } from '../../components/emailbox/emailbox.component';
@@ -21,39 +21,69 @@ export class CustomerFormComponent implements OnInit {
   formService = inject(MainFormService);
 
   form!: FormGroup;
-  customerId!: string | null;
+  id!: string | null;
   customer!: WritableSignal<any | undefined>;
+  isloading!: Signal<boolean>;
 
 
   constructor() {
-    this.setCustomerID();
-    this.buildForm();
-    this.setFormPath();
+    this.isloading = this.service.one.isLoading;
     this.customer = this.service.one.value;
 
-    effect(() => console.log(this.customer()))
+    this.setCustomerID();
+    this.setFormPath();
+    this.buildForm();
+
+    if (this.id)
+      effect(() => {
+        if (!this.isloading())
+          this.setFormValues();
+      })
   }
 
   ngOnInit(): void {
   }
 
   submit() {
-    this.service.data.set(this.form.value);
+    this.service
+      .insert(this.form.value)
+      .subscribe({
+        next: (data) => {
+          console.log(data);
+          this.service.listReferesh.set('');
+        }
+      });
   }
 
   setCustomerID() {
-    this.customerId = this.route.snapshot.paramMap.get('id');
+    this.id = this.route.snapshot.paramMap.get('id');
+    if (this.id)
+      this.service.id.set(+this.id);
   }
+
   buildForm() {
     this.form = this.fb.group({
-      name: [null, [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],
-      phone: [],
-      email: [],
-      address: []
+      name: [
+        null, Validators.required
+      ],
+      phone: [null],
+      email: [null],
+      address: [null]
     });
   }
+
+  setFormValues() {
+    const { name, phone, email, address } = this.form.controls;
+    const c = this.customer();
+
+    name.setValue(c.name);
+    phone.setValue(c.phone);
+    email.setValue(c.email);
+    address.setValue(c.address);
+  }
+
   setFormPath() {
-    if (this.customerId)
+    if (this.id)
       return this.formService.close.set('../..');
 
     this.formService.close.set('../');

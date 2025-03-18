@@ -1,5 +1,4 @@
 import db from '../db';
-import { DBResultType, DBMessageType } from '../types/db-types';
 
 export abstract class DBQuery {
     protected abstract model: string;
@@ -21,7 +20,7 @@ export abstract class DBQuery {
     }
 
     protected async getProcedureQuery(fn: string, params: any) {
-        await db.query(`${fn}('${JSON.stringify(params)}')`);
+        await db.query(`${fn}('${params}')`);
         return { message: 'success' };
     }
 
@@ -59,7 +58,12 @@ export abstract class MainORM extends DBQuery {
         return await (this.attempt(result));
     }
     async insert(data: any) {
+        data = JSON.stringify(data);
         const result = this.getProcedureQuery(this.insertString, data);
+        return await (this.attempt(result));
+    }
+    async delete(id: number) {
+        const result = this.getProcedureQuery(this.deleteString, id);
         return await (this.attempt(result));
     }
 }

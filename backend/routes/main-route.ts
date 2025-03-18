@@ -18,11 +18,17 @@ router
 
     .get('/', (req, res, next) => {
         (<any>req)['result'] = model.list();
+        console.log(req.query)
         next()
     })
 
     .post('/', firstInit, (req, _, next) => {
         (<any>req)['result'] = model.insert(req.body);
+        next();
+    })
+
+    .delete('/:id', firstInit, (req, _, next) => {
+        (<any>req)['result'] = model.delete(+req.params.id);
         next();
     })
 

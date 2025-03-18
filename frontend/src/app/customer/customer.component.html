@@ -1,5 +1,5 @@
 <router-outlet />
-<gridview [data]="customers" (edit)="edit($event)">
+<gridview [data]="customers" (edit)="edit($event)" (delete)="drop($event)">
     <ng-container>
         <th>Name</th>
         <th>Phone</th>

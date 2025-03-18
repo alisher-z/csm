@@ -22,7 +22,17 @@ export class CustomerComponent implements OnInit {
   }
 
   edit(id: number) {
-    this.service.id.set(id);
     this.route.navigate(['customer', 'form', id]);
+  }
+
+  drop(id: number) {
+    this.service
+      .delete(id)
+      .subscribe({
+        next: (data) => {
+          console.log(data);
+          this.service.listReferesh.set('');
+        }
+      });
   }
 }
