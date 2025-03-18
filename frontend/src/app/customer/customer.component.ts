@@ -2,6 +2,9 @@ import { Component, computed, effect, inject, linkedSignal, OnInit, ResourceStat
 import { CustomerService } from './customer.service';
 import { Router, RouterOutlet } from '@angular/router';
 import { GridviewComponent } from '../components/gridview/gridview.component';
+import { GridviewService } from '../components/gridview/gridview.service';
+import { MainService } from '../components/main.service';
+import { GridviewDirective } from '../components/gridview/gridview.directive';
 
 @Component({
   selector: 'app-customer',
@@ -9,30 +12,13 @@ import { GridviewComponent } from '../components/gridview/gridview.component';
   templateUrl: './customer.component.html',
   styleUrl: './customer.component.scss'
 })
-export class CustomerComponent implements OnInit {
-  service = inject(CustomerService);
-  route = inject(Router);
-  customers: WritableSignal<any[] | undefined>;
+export class CustomerComponent extends GridviewDirective {
+  override service = inject(CustomerService);
+  override gridService = inject(GridviewService);
+  override formPath = ['customer', 'form'];
 
   constructor() {
-    this.customers = this.service.list.value;
-  }
-
-  ngOnInit(): void {
-  }
-
-  edit(id: number) {
-    this.route.navigate(['customer', 'form', id]);
-  }
-
-  drop(id: number) {
-    this.service
-      .delete(id)
-      .subscribe({
-        next: (data) => {
-          console.log(data);
-          this.service.listReferesh.set('');
-        }
-      });
+    super();
+    this.init();
   }
 }

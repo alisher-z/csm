@@ -8,6 +8,7 @@ import { CustomerService } from '../customer.service';
 import { MainFormService } from '../../components/form/form.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
+import { FormDirective } from '../../components/form/form.directive';
 
 @Component({
   selector: 'app-form',
@@ -15,59 +16,22 @@ import { Observable } from 'rxjs';
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss'
 })
-export class CustomerFormComponent implements OnInit {
-  fb = inject(FormBuilder);
-  route = inject(ActivatedRoute);
+export class CustomerFormComponent extends FormDirective {
   service = inject(CustomerService);
-  formService = inject(MainFormService);
-
-  form!: FormGroup;
-  id!: string | null;
-  customer!: WritableSignal<any | undefined>;
-  isloading!: Signal<boolean>;
-
 
   constructor() {
-    this.isloading = this.service.one.isLoading;
-    this.customer = this.service.one.value;
-
-    this.setCustomerID();
-    this.setFormPath();
-    this.buildForm();
+    super();
+    this.init();
 
     if (this.id)
       effect(() => {
-        if (!this.isloading())
-          this.setFormValues();
+        if (!this.loading())
+          this.setForm();
       })
   }
 
-  ngOnInit(): void {
-  }
-
-  submit() {
-    let send!: Observable<any>;
-
-    send = this.id
-      ? this.service.update(this.id, this.form.value)
-      : this.service.insert(this.form.value);
-
-    send.subscribe({
-      next: (data) => {
-        console.log(data);
-        this.service.listReferesh.set('');
-      }
-    });
-  }
-
-  setCustomerID() {
-    this.id = this.route.snapshot.paramMap.get('id');
-    if (this.id)
-      this.service.id.set(+this.id);
-  }
-
-  buildForm() {
-    this.form = this.fb.group({
+  getForm() {
+    return this.fb.group({
       name: [
         null, Validators.required
       ],
@@ -77,20 +41,13 @@ export class CustomerFormComponent implements OnInit {
     });
   }
 
-  setFormValues() {
+  setForm() {
     const { name, phone, email, address } = this.form.controls;
-    const c = this.customer();
+    const c = this.data();
 
     name.setValue(c.name);
     phone.setValue(c.phone);
     email.setValue(c.email);
     address.setValue(c.address);
-  }
-
-  setFormPath() {
-    if (this.id)
-      return this.formService.close.set('../..');
-
-    this.formService.close.set('../');
   }
 }

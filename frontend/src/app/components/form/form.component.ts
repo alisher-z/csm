@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MainFormService } from './form.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'main-form',
@@ -14,6 +15,7 @@ export class MainFormComponent {
   @Output() send = new EventEmitter();
 
   service = inject(MainFormService);
+  clientService = this.service.service;
 
   submit() {
     this.form.markAllAsTouched()
@@ -21,6 +23,15 @@ export class MainFormComponent {
       return;
 
     this.send.emit();
+
+    const send = this.service.id
+      ? this.clientService.update(this.service.id, this.form.value)
+      : this.clientService.insert(this.form.value);
+
+    send.subscribe((data) => {
+      console.log(data);
+      this.clientService.listReferesh.set('');
+    });
   }
   get close() {
     return this.service.close();

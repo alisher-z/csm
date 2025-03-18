@@ -1,5 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, ContentChild, EventEmitter, Input, Output, resource, TemplateRef, WritableSignal } from '@angular/core';
+import { Component, ContentChild, EventEmitter, inject, Input, Output, resource, TemplateRef, WritableSignal } from '@angular/core';
+import { GridviewService } from './gridview.service';
+import { MainService } from '../main.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'gridview',
@@ -8,19 +11,38 @@ import { Component, ContentChild, EventEmitter, Input, Output, resource, Templat
   styleUrl: './gridview.component.scss'
 })
 export class GridviewComponent {
-  @Input() data!: WritableSignal<any[] | undefined>;
+  router = inject(Router);
+  service = inject(GridviewService);
+  clientService: MainService;
+  data: WritableSignal<any[] | undefined>;
+
+
   @Output('edit') _edit = new EventEmitter<number>();
   @Output('delete') _drop = new EventEmitter<number>();
   @ContentChild('row') row: TemplateRef<any> | null = null;
+
+  constructor() {
+    this.data = this.service.data;
+    this.clientService = this.service.service;
+  }
+
   isControl = true;
 
   rowClick() {
     this.isControl = !this.isControl;
   }
-  edit(id: number) {
-    this._edit.emit(id);
+  edit(id: string) {
+    this._edit.emit(+id);
+    this.router.navigate([...this.service.formPath, id])
   }
+
   drop(id: number) {
     this._drop.emit(id);
+    this.clientService
+      .delete(id)
+      .subscribe((data) => {
+        console.log(data);
+        this.clientService.listReferesh.set('');
+      })
   }
 }
