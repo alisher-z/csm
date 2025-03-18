@@ -1,10 +1,17 @@
 -- Active: 1741849904817@@127.0.0.1@5432@csm
 
-create procedure pr_insert_supplier(_name varchar, _phone varchar, _email varchar, _address varchar) language plpgsql as $$
+create procedure pr_insert_supplier(supplier jsonb) language plpgsql as $$
+    declare
+        _name varchar;
+        _phone varchar;
+        _email varchar;
+        _address varchar;
+
     begin
-        if trim(_phone) = '' then _phone := null; end if;
-        if trim(_email) = '' then _email := null; end if;
-        if trim(_address) = '' then _address := null; end if;
+        _name := nullif(trim(supplier->>'name'),'');
+        _phone := nullif(trim(supplier->>'phone'),'');
+        _email := nullif(trim(supplier->>'email'),'');
+        _address := nullif(trim(supplier->>'address'),'');
 
         insert into suppliers(name, phone, email, address)
         values(_name, _phone, _email, _address);
