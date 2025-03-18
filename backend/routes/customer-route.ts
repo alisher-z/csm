@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Customer } from '../orm/customer-orm';
-import mainRoute from './main-route';
+import mainRoute from './main.route';
 
 const router = Router();
 

@@ -122,3 +122,62 @@ as $$
 $$;
 
 SELECT * from fn_one_customer(1);
+
+create function fn_list_supplier()
+returns table(
+    id int,
+    name varchar,
+    phone varchar,
+    email varchar
+) language plpgsql
+as $$
+    begin
+        return query
+        select s.id, s.name, s.phone, s.email
+        from suppliers as s;
+    end;
+$$;
+
+SELECT * from fn_list_customer()
+
+create Function fn_one_supplier(_id int)
+returns table(
+    id int,
+    "name" varchar,
+    phone varchar,
+    email varchar,
+    address text
+) language plpgsql
+as $$
+    begin
+        return query
+        select * from suppliers where suppliers.id = _id;
+    end;
+$$;
+
+create function fn_list_product()
+returns table(
+    id int,
+    name varchar,
+    description text
+) language plpgsql
+as $$
+    begin
+        return query
+        select p.id, p.name, p.description
+        from products as p;
+    end;
+$$;
+
+create Function fn_one_product(_id int)
+returns table(
+    id int,
+    name varchar,
+    description text
+) language plpgsql
+as $$
+    begin
+        return query
+        select * from products where products.id = _id;
+    end;
+$$;

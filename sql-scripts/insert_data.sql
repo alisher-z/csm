@@ -40,9 +40,14 @@ create procedure pr_insert_customer(customer jsonb) language plpgsql as $$
     end;
 $$;
 
-create procedure pr_insert_product(_name varchar, _description text) language plpgsql as $$
+create procedure pr_insert_product(product jsonb) language plpgsql as $$
+    declare
+    _name varchar; 
+    _description text;
+
     begin
-        if trim(_description) = '' then _description := null; end if;
+        _name := nullif(trim(product->>'name'),'');
+        _description := nullif(trim(product->>'description'), '');
 
         insert into products(name, description)
         values(_name, _description);
@@ -93,20 +98,3 @@ create procedure pr_insert_sale(_date date, _description text, _quantity int, _o
         call pr_insert_receivable(_received, _date, _cust_id);
     end;
 $$;
-
-select nullif(trim('   '), '');
-
-
-create procedure pr_update_customer(data jsonb)
-language plpgsql
-as $$
-    begin
-        update customers set
-        name = nullif(trim(data->>'name'), ''),
-        phone = nullif(trim(data->>'phone'),''),
-        email = nullif(trim(data->>'email'),''),
-        address = nullif(trim(data->>'address'),'')
-        where id = (data->>'id')::integer;
-    end;
-$$;
-select * from customers;
