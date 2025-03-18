@@ -22,8 +22,16 @@ router
         next()
     })
 
-    .post('/', firstInit, (req, _, next) => {
+    .post('/', (req, _, next) => {
         (<any>req)['result'] = model.insert(req.body);
+        next();
+    })
+
+    .put('/:id', (req, _, next) => {
+        (<any>req)['result'] = model.update({
+            ...req.body,
+            id: +req.params.id
+        });
         next();
     })
 

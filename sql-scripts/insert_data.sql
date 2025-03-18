@@ -86,3 +86,20 @@ create procedure pr_insert_sale(_date date, _description text, _quantity int, _o
         call pr_insert_receivable(_received, _date, _cust_id);
     end;
 $$;
+
+select nullif(trim('   '), '');
+
+
+create procedure pr_update_customer(data jsonb)
+language plpgsql
+as $$
+    begin
+        update customers set
+        name = nullif(trim(data->>'name'), ''),
+        phone = nullif(trim(data->>'phone'),''),
+        email = nullif(trim(data->>'email'),''),
+        address = nullif(trim(data->>'address'),'')
+        where id = (data->>'id')::integer;
+    end;
+$$;
+select * from customers;

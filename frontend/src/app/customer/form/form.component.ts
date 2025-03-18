@@ -7,6 +7,7 @@ import { MainFormComponent } from "../../components/form/form.component";
 import { CustomerService } from '../customer.service';
 import { MainFormService } from '../../components/form/form.service';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-form',
@@ -45,14 +46,18 @@ export class CustomerFormComponent implements OnInit {
   }
 
   submit() {
-    this.service
-      .insert(this.form.value)
-      .subscribe({
-        next: (data) => {
-          console.log(data);
-          this.service.listReferesh.set('');
-        }
-      });
+    let send!: Observable<any>;
+
+    send = this.id
+      ? this.service.update(this.id, this.form.value)
+      : this.service.insert(this.form.value);
+
+    send.subscribe({
+      next: (data) => {
+        console.log(data);
+        this.service.listReferesh.set('');
+      }
+    });
   }
 
   setCustomerID() {

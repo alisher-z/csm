@@ -62,6 +62,11 @@ export abstract class MainORM extends DBQuery {
         const result = this.getProcedureQuery(this.insertString, data);
         return await (this.attempt(result));
     }
+    async update(data: any) {
+        data = JSON.stringify(data);
+        const result = this.getProcedureQuery(this.updateString, data);
+        return (this.attempt(result));
+    }
     async delete(id: number) {
         const result = this.getProcedureQuery(this.deleteString, id);
         return await (this.attempt(result));

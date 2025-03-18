@@ -32,14 +32,16 @@ export abstract class MainService {
       .post(this.fullUrl, data)
       .pipe(take(1));
   }
+
+  update(id: string, data: any) {
+    return this.http
+      .put(`${this.fullUrl}/${id}`, data)
+      .pipe(take(1));
+  }
+
   delete(id: number) {
     return this.http
       .delete(`${this.fullUrl}/${id}`)
       .pipe(take(1));
   }
-
-
-  // insert(data: any) {
-  //   return this.http.post(this.fullUrl, data)
-  // }
 }
