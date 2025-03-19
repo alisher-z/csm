@@ -3,16 +3,16 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { VAccessorDirective } from '../utils/v-accessor.directive';
 
 @Component({
-  selector: 'my-date',
+  selector: 'numberbox',
   imports: [],
-  templateUrl: './my-date.component.html',
-  styleUrl: './my-date.component.scss',
+  templateUrl: './numberbox.component.html',
+  styleUrl: './numberbox.component.scss',
   providers: [{
     provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => MyDateComponent),
+    useExisting: forwardRef(() => NumberboxComponent),
     multi: true
   }]
 })
-export class MyDateComponent extends VAccessorDirective {
+export class NumberboxComponent extends VAccessorDirective {
 
 }

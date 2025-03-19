@@ -5,7 +5,15 @@
             <my-select caption="Supplier" [options]="suppliers" formControlName="supplier" />
             <my-select caption="Product" [options]="products" formControlName="product" />
         </ng-container>
-        <label>Date</label>
-        <input type="date">
+        <my-date caption="Date" formControlName="date" />
+        <numberbox caption="Quantity" formControlName="quantity" />
+        <ng-container formGroupName="prices">
+            <numberbox caption="Purchase" formControlName="purchase" />
+            <numberbox caption="Sale" formControlName="sale" />
+        </ng-container>
+        <label>
+            <span>Current Price</span>
+            <input type="checkbox">
+        </label>
     </ng-container>
 </main-form>

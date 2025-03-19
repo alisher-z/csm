@@ -9,6 +9,8 @@ import { InventoryService } from '../inventory.service';
 import { SupplierService } from '../../supplier/supplier.service';
 import { MySelectComponent } from "../../components/my-select/my-select.component";
 import { ProductService } from '../../product/product.service';
+import { MyDateComponent } from "../../components/my-date/my-date.component";
+import { NumberboxComponent } from "../../components/numberbox/numberbox.component";
 
 @Component({
   selector: 'inventory-form',
@@ -17,7 +19,9 @@ import { ProductService } from '../../product/product.service';
     MainFormComponent,
     TextboxComponent,
     RichtextComponent,
-    MySelectComponent
+    MySelectComponent,
+    MyDateComponent,
+    NumberboxComponent
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss'
