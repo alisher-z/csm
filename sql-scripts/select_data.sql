@@ -193,17 +193,42 @@ language plpgsql as $$
     end;
 $$;
 
-create function fn_one_inventory() 
+create function fn_one_inventory(_id int) 
 returns table(
-    id int, "date" date, quantity int
+    "date" date,
+    "description" text,
+    quantity int,
+    "current" boolean,
+    "references" jsonb,
+    prices jsonb
 )
 language plpgsql as $$
     begin
         return query
-        select inventories.id, inventories."date", inventories.quantity from inventories;
+        select
+            i."date",
+            i.description,
+            i.quantity,
+            p."current",
+            jsonb_build_object(
+                'inventory',i.id,
+                'product', i.prod_id,
+                'supplier', i.sup_id
+            ) as "references",
+            jsonb_build_object(
+                'purchase', p.purchase,
+                'sale',p.sale
+            ) as prices
+        from inventories as i
+        join prices as p
+        on p.inv_id = i.id
+        where i.id = _id;
     end;
 $$;
 select * from pr_list_inventory();
+SELECT * from fn_one_inventory(1);
+
+select * from inventories join prices on prices.inv_id = inventories.id where inventories.id = 1;
 
 call pr_insert_inventory(
     '{
@@ -260,3 +285,5 @@ select count(*) from prices where prod_id = 3;
 select * from products;
 
 insert into products(name) values('test product');
+
+select * from inventories;

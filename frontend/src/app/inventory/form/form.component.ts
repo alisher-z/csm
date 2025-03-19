@@ -69,7 +69,7 @@ export class InventoryFormComponent extends FormDirective {
     const { product, supplier } = (<FormGroup>this.form.get('references')).controls;
 
     const i = this.data();
-    date.setValue(i.date);
+    date.setValue(formatDate(i.date, 'yyyy-MM-dd', 'en'));
     description.setValue(i.description);
     quantity.setValue(i.quantity);
     current.setValue(i.current);

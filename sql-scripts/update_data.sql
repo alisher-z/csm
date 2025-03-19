@@ -73,7 +73,7 @@ create procedure pr_update_inventory(inventory jsonb) language plpgsql as $$
         _date := inventory->>'date';
         _description := nullif(trim(inventory->>'description'),'');
         _quantity := coalesce(nullif(trim(inventory->>'quantity'),''),'0')::int;
-        _id := coalesce(nullif(trim(inventory->'references'->>'inventory'),''),'0')::integer;
+        _id := coalesce(nullif(trim(inventory->>'id'),''),'0')::integer;
         _prod_id := coalesce(nullif(trim(inventory->'references'->>'product'),''),'0')::integer;
         _sup_id := coalesce(nullif(trim(inventory->'references'->>'supplier'),''),'0')::integer;
 
@@ -85,7 +85,7 @@ create procedure pr_update_inventory(inventory jsonb) language plpgsql as $$
             sup_id = _sup_id
         where id = _id;
 
-        call pr_update_price(inventory);
+        call pr_update_price(jsonb_set(inventory, '{references, inventory}',to_jsonb(_id),true));
     end;
 $$;
 
