@@ -181,3 +181,39 @@ as $$
         select * from products where products.id = _id;
     end;
 $$;
+
+create function pr_list_inventory() 
+returns table(
+    id int, "date" date, quantity int
+)
+language plpgsql as $$
+    begin
+        return query
+        select inventories.id, inventories."date", inventories.quantity from inventories;
+    end;
+$$;
+
+call pr_insert_inventory(
+    '{
+        "date":"2025-03-19",
+        "description":"test",
+        "quantity":7,
+        "references":{
+            "product":1,
+            "supplier":1
+        },
+        "current":true,
+        "prices":{
+            "purchase":150,
+            "sale":205
+        }
+    }'::jsonb
+);
+
+select current_date;
+
+drop procedure pr_insert_inventory;
+drop procedure pr_insert_price;
+
+select * from inventories;
+select * from prices;
