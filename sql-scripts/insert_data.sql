@@ -18,6 +18,7 @@ create procedure pr_insert_supplier(supplier jsonb) language plpgsql as $$
     end;
 $$;
 
+
 create procedure pr_insert_customer(customer jsonb) language plpgsql as $$
     declare
         _name varchar;
@@ -42,7 +43,7 @@ $$;
 
 create procedure pr_insert_product(product jsonb) language plpgsql as $$
     declare
-    _name varchar; 
+    _name varchar;
     _description text;
 
     begin
@@ -54,8 +55,20 @@ create procedure pr_insert_product(product jsonb) language plpgsql as $$
     end;
 $$;
 
-create procedure pr_insert_price(_inv_id int, _prod_id int, _purchase float, _sale float, _current boolean) language plpgsql as $$
+create procedure pr_insert_price(price jsonb) language plpgsql as $$
+    declare
+        _inv_id int;
+        _prod_id int;
+        _purchase float;
+        _sale float;
+        _current boolean;
     begin
+        _current := (price->>'current')::boolean;
+        _inv_id := (price->'references'->>'inventory')::integer;
+        _prod_id := (price->'references'->>'product')::integer;
+        _purchase := (price->'prices'->>'purchase')::float;
+        _sale := (price->'prices'->>'sale')::float;
+
         if _current = true then
             update prices
             set current = false
@@ -67,19 +80,32 @@ create procedure pr_insert_price(_inv_id int, _prod_id int, _purchase float, _sa
     end;
 $$;
 
-create procedure pr_insert_inventory( _date date, _description text, _quantity int, _prod_id int, _sup_id int, _purchase float, _sale float, _current boolean) language plpgsql as $$
+
+create procedure pr_insert_inventory(inventory jsonb) language plpgsql as $$
     declare
         inventory_id int;
+        _date date;
+        _description text;
+        _quantity int;
+        _prod_id int;
+        _sup_id int;
+
     begin
-        if trim(_description) = '' then _description := null; end if;
+        _date := inventory->>'date';
+        _description := nullif(trim(inventory->>'description'),'');
+        _quantity := (inventory->>'quantity')::int;
+        _prod_id := (inventory->'references'->>'product')::integer;
+        _sup_id := (inventory->'references'->>'supplier')::integer;
 
         insert into inventories("date", "description", quantity, prod_id, sup_id)
         values (_date, _description, _quantity, _prod_id, _sup_id)
         returning id into inventory_id;
 
-        call pr_insert_price(inventory_id, _prod_id, _purchase, _sale, _current);
+
+        call pr_insert_price(jsonb_set(inventory,'{references, inventory}',to_jsonb(inventory_id),true));
     end;
 $$;
+
 
 create procedure pr_insert_receivable(_received float, _date date, _cust_id int) language plpgsql as $$
     begin
@@ -87,6 +113,7 @@ create procedure pr_insert_receivable(_received float, _date date, _cust_id int)
         values(_received, _date, _cust_id);
     end;
 $$;
+
 
 create procedure pr_insert_sale(_date date, _description text, _quantity int, _other_price float, _inv_id int, _prod_id int, _cust_id int, _received float) language plpgsql as $$
     begin
@@ -98,3 +125,4 @@ create procedure pr_insert_sale(_date date, _description text, _quantity int, _o
         call pr_insert_receivable(_received, _date, _cust_id);
     end;
 $$;
+
