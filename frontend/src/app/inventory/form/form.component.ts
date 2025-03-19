@@ -1,5 +1,5 @@
 import { Component, effect, inject, WritableSignal } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MainFormComponent } from '../../components/form/form.component';
 import { TextboxComponent } from '../../components/textbox/textbox.component';
 import { RichtextComponent } from '../../components/richtext/richtext.component';
@@ -11,13 +11,13 @@ import { MySelectComponent } from "../../components/my-select/my-select.componen
 import { ProductService } from '../../product/product.service';
 import { MyDateComponent } from "../../components/my-date/my-date.component";
 import { NumberboxComponent } from "../../components/numberbox/numberbox.component";
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'inventory-form',
   imports: [
     ReactiveFormsModule,
     MainFormComponent,
-    TextboxComponent,
     RichtextComponent,
     MySelectComponent,
     MyDateComponent,
@@ -45,17 +45,20 @@ export class InventoryFormComponent extends FormDirective {
 
   getForm() {
     return this.fb.group({
-      date: [],
-      description: [],
-      quantity: [],
-      current: [],
+      date: [
+        this.today,
+        Validators.required
+      ],
+      description: [null],
+      quantity: [1],
+      current: [true],
       prices: this.fb.group({
-        purchase: [],
-        sale: []
+        purchase: [0],
+        sale: [0]
       }),
       references: this.fb.group({
-        product: [],
-        supplier: []
+        product: [null, Validators.required],
+        supplier: [null, Validators.required]
       })
     });
   }
@@ -74,5 +77,8 @@ export class InventoryFormComponent extends FormDirective {
     sale.setValue(i.prices.sale);
     product.setValue(i.references.product);
     supplier.setValue(i.references.supplier);
+  }
+  get today() {
+    return formatDate(Date(), 'yyyy-MM-dd', 'en');
   }
 }

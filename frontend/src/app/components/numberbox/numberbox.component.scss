@@ -1,0 +1,29 @@
+:host {
+    display: contents;
+}
+
+label {
+    display: flex;
+    gap: 3px;
+
+    span {
+        font-weight: 500;
+    }
+}
+
+input {
+    background: none;
+    outline: none;
+    border: 1px solid rgba(#fff, .3);
+    padding: 5px 7px;
+    transition: all .7s;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    &:focus {
+        border: 1px solid rgba(#fff, .85);
+    }
+}

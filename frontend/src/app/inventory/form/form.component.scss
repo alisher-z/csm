@@ -1,0 +1,64 @@
+.body {
+    // background: red;
+    grid-column: 1/-1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    align-items: end;
+    // gap: 25px;
+}
+
+fieldset {
+    display: grid;
+    grid-template-columns: repeat(2, 135px);
+    justify-content: space-between;
+    row-gap: 15px;
+    border: 1px dotted rgba(#fff, .2);
+    border-left: none;
+    border-right: none;
+    padding: 5px 1px;
+    padding-top: 15px;
+    position: relative;
+    // margin-top: 15px;
+
+    legend {
+        position: absolute;
+        top: -14px;
+        background-color: var(--brown);
+        padding-right: 7px;
+    }
+
+    div {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        width: 135px;
+    }
+}
+
+label {
+    display: flex;
+    gap: 7px;
+    grid-column: 2/-1;
+    cursor: pointer;
+}
+
+.quantity {
+    grid-column: 2/-1;
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 7px;
+    align-items: end;
+}
+
+.description {
+    margin-top: -13px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}

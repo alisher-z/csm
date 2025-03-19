@@ -1,19 +1,41 @@
 <main-form [formGroup]="form">
     <ng-container header>Supplier Form</ng-container>
     <ng-container body>
-        <ng-container formGroupName="references">
-            <my-select caption="Supplier" [options]="suppliers" formControlName="supplier" />
-            <my-select caption="Product" [options]="products" formControlName="product" />
-        </ng-container>
-        <my-date caption="Date" formControlName="date" />
-        <numberbox caption="Quantity" formControlName="quantity" />
-        <ng-container formGroupName="prices">
-            <numberbox caption="Purchase" formControlName="purchase" />
-            <numberbox caption="Sale" formControlName="sale" />
-        </ng-container>
-        <label>
-            <span>Current Price</span>
-            <input type="checkbox">
-        </label>
+        <div class="body">
+            <ng-container formGroupName="references">
+                <div class="input">
+                    <my-select caption="Supplier" [options]="suppliers" formControlName="supplier" />
+                </div>
+                <div class="input">
+                    <my-select caption="Product" [options]="products" formControlName="product" />
+                </div>
+            </ng-container>
+            <div class="input">
+                <my-date caption="Date" formControlName="date" />
+            </div>
+            <div class="input">
+                <div class="quantity">
+                    <numberbox caption="Quantity" formControlName="quantity" />
+                </div>
+            </div>
+            <fieldset>
+                <legend>Price</legend>
+                <ng-container formGroupName="prices">
+                    <div>
+                        <numberbox caption="Purchase" formControlName="purchase" />
+                    </div>
+                    <div>
+                        <numberbox caption="Sale" formControlName="sale" />
+                    </div>
+                </ng-container>
+                <label>
+                    <input type="checkbox" formControlName="current">
+                    <span>Current Price</span>
+                </label>
+            </fieldset>
+            <div class="description">
+                <richtext caption="Description" formControlName="description" />
+            </div>
+        </div>
     </ng-container>
 </main-form>
