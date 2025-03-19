@@ -182,7 +182,7 @@ as $$
     end;
 $$;
 
-create function pr_list_inventory() 
+create function fn_list_inventory() 
 returns table(
     id int, "date" date, quantity int
 )
@@ -193,13 +193,25 @@ language plpgsql as $$
     end;
 $$;
 
+create function fn_one_inventory() 
+returns table(
+    id int, "date" date, quantity int
+)
+language plpgsql as $$
+    begin
+        return query
+        select inventories.id, inventories."date", inventories.quantity from inventories;
+    end;
+$$;
+select * from pr_list_inventory();
+
 call pr_insert_inventory(
     '{
         "date":"2025-03-19",
         "description":"test",
         "quantity":7,
         "references":{
-            "product":1,
+            "product":4,
             "supplier":1
         },
         "current":true,
@@ -210,10 +222,41 @@ call pr_insert_inventory(
     }'::jsonb
 );
 
+call pr_update_inventory(
+    '{
+        "date":"2025-04-19",
+        "description":"test updated",
+        "quantity":7,
+        "references":{
+            "product":4,
+            "supplier":1,
+            "inventory":8
+        },
+        "current":true,
+        "prices":{
+            "purchase":152,
+            "sale":205
+        }
+    }'::jsonb
+);
+
 select current_date;
 
-drop procedure pr_insert_inventory;
+drop procedure pr_update_inventory;
 drop procedure pr_insert_price;
 
 select * from inventories;
 select * from prices;
+
+call pr_delete_inventory(11);
+drop procedure pr_delete_inventory;
+
+select prod_id, "current" from prices where inv_id = 9;
+
+select * from prices where prod_id = 1 order by inv_id desc limit 1;
+
+select count(*) from prices where prod_id = 3;
+
+select * from products;
+
+insert into products(name) values('test product');

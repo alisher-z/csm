@@ -1,0 +1,11 @@
+<router-outlet />
+<gridview>
+    <ng-container>
+        <th>Date</th>
+        <th>Quantity</th>
+    </ng-container>
+    <ng-template #row let-item>
+        <td>{{item.date|date}}</td>
+        <td>{{item.quantity}}</td>
+    </ng-template>
+</gridview>

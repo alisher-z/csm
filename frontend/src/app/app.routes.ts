@@ -5,6 +5,8 @@ import { SupplierComponent } from './supplier/supplier.component';
 import { SupplierFormComponent } from './supplier/form/form.component';
 import { ProductComponent } from './product/product.component';
 import { ProductFormComponent } from './product/form/form.component';
+import { InventoryComponent } from './inventory/inventory.component';
+import { InventoryFormComponent } from './inventory/form/form.component';
 
 export const routes: Routes = [
     {
@@ -41,6 +43,18 @@ export const routes: Routes = [
             }, {
                 path: 'form/:id',
                 component: ProductFormComponent
+            }
+        ]
+    }, {
+        path: 'inventory',
+        component: InventoryComponent,
+        children: [
+            {
+                path: 'form',
+                component: InventoryFormComponent
+            }, {
+                path: 'form/:id',
+                component: InventoryFormComponent
             }
         ]
     }

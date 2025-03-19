@@ -1,0 +1,11 @@
+<main-form [formGroup]="form">
+    <ng-container header>Supplier Form</ng-container>
+    <ng-container body>
+        <ng-container formGroupName="references">
+            <my-select caption="Supplier" [options]="suppliers" formControlName="supplier" />
+            <my-select caption="Product" [options]="products" formControlName="product" />
+        </ng-container>
+        <label>Date</label>
+        <input type="date">
+    </ng-container>
+</main-form>
