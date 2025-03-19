@@ -64,10 +64,10 @@ create procedure pr_insert_price(price jsonb) language plpgsql as $$
         _current boolean;
     begin
         _current := (price->>'current')::boolean;
-        _inv_id := (price->'references'->>'inventory')::integer;
-        _prod_id := (price->'references'->>'product')::integer;
-        _purchase := (price->'prices'->>'purchase')::float;
-        _sale := (price->'prices'->>'sale')::float;
+        _inv_id := coalesce(nullif(trim(price->'references'->>'inventory'),''),'0')::integer;
+        _prod_id := coalesce(nullif(trim(price->'references'->>'product'),''),'0')::integer;
+        _purchase := coalesce(nullif(trim(price->'prices'->>'purchase'),''),'0')::float;
+        _sale := coalesce(nullif(trim(price->'prices'->>'sale'),''),'0')::float;
 
         if _current = true then
             update prices
@@ -93,9 +93,9 @@ create procedure pr_insert_inventory(inventory jsonb) language plpgsql as $$
     begin
         _date := inventory->>'date';
         _description := nullif(trim(inventory->>'description'),'');
-        _quantity := (inventory->>'quantity')::int;
-        _prod_id := (inventory->'references'->>'product')::integer;
-        _sup_id := (inventory->'references'->>'supplier')::integer;
+        _quantity := coalesce(nullif(trim(inventory->>'quantity'),''),'0')::int;
+        _prod_id := coalesce(nullif(trim(inventory->'references'->>'product'),''),'0')::integer;
+        _sup_id := coalesce(nullif(trim(inventory->'references'->>'supplier'),''),'0')::integer;
 
         insert into inventories("date", "description", quantity, prod_id, sup_id)
         values (_date, _description, _quantity, _prod_id, _sup_id)
