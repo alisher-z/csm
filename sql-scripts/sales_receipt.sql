@@ -1,23 +1,114 @@
+-- Active: 1742374391022@@127.0.0.1@5432@csm
 create table sales_receipts(
     id int generated always as identity primary key,
     "name" varchar(50),
     cust_id int not null references customers(id) on delete cascade
 );
 
-create table receivables(
-    id int generated always as identity primary key,
-    "date" date not null,
-    received float not null default 0,
-    "description" text,
-    recp_id int references sales_receipts(id) on delete cascade
-);
+create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
+    declare
+        _id int;
+        _cust_id int;
 
-create table sales(
-    id int generated always as identity primary key,
-    "description" text,
-    quantity int not null default 0,
-    other_price float not null default 0,
-    inv_id int not null,
-    prod_id int not null,
-    foreign key (inv_id, prod_id) references prices(inv_id, prod_id)
-);
+        updated_receipt jsonb;
+
+    begin
+        _cust_id := (receipt->'references'->>'customer')::int;
+
+        insert into sales_receipts(cust_id)
+        values(_cust_id)
+        returning id into _id;
+
+        updated_receipt := jsonb_set(receipt, '{references, receipt}', to_jsonb(_id), true);
+
+        call pr_insert_sale(updated_receipt);
+        call pr_insert_receivables(updated_receipt);
+    end;
+$$;
+
+create procedure pr_update_sales_receipt(receipt jsonb)language plpgsql as $$
+    declare
+        _id int;
+        _cust_id int;
+        updated_receipt jsonb;
+
+    begin
+        _id := (receipt->>'id')::int;
+        _cust_id := (receipt->'references'->>'customer')::int;
+
+        update sales_receipts
+        set cust_id = _cust_id
+        where id = _id;
+
+        updated_receipt := jsonb_set(receipt, '{references, receipt}', to_jsonb(_id), true);
+
+        call pr_update_sale(updated_receipt);
+        call pr_update_receivable(updated_receipt);
+    end;
+$$;
+
+call pr_insert_sales_receipt('{
+     "id": 1,
+     "date": "2025-03-20",
+     "received": 200,
+     "description": "my description",
+     "references": {
+          "customer": 2
+     },
+     "items": [
+          {
+               "description": "item1 description",
+               "quantity": 3,
+               "otherPrice": 0,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          },
+          {
+               "description": "item2 description",
+               "quantity": 4,
+               "otherPrice": 5,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          }
+     ]
+}');
+
+call pr_update_sales_receipt('{
+     "id": 1,
+     "date": "2025-03-21",
+     "received": 200,
+     "description": "my description",
+     "references": {
+          "customer": 2
+     },
+     "items": [
+          {
+                "id":1,
+               "description": "item1 description",
+               "quantity": 5,
+               "otherPrice": 0,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          },
+          {
+                "id":2,
+               "description": "item2 description",
+               "quantity": 7,
+               "otherPrice": 5,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          }
+     ]
+}');
+
+select * from sales_receipts;
+select * from receivables;
+select * from sales;

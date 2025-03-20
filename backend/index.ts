@@ -5,8 +5,8 @@ import customerRouter from './routes/customer-route';
 import supplierRouter from './routes/supplier.route';
 import productRouter from './routes/product.route';
 import inventoryRouter from './routes/inventory.route';
-// import { run } from './test';
-// run();
+import { run } from './test';
+run();
 const app = express();
 const PORT = 3000;
 
