@@ -41,6 +41,7 @@ create procedure pr_insert_customer(customer jsonb) language plpgsql as $$
     end;
 $$;
 
+
 create procedure pr_insert_product(product jsonb) language plpgsql as $$
     declare
     _name varchar;
@@ -54,6 +55,7 @@ create procedure pr_insert_product(product jsonb) language plpgsql as $$
         values(_name, _description);
     end;
 $$;
+
 
 create procedure pr_insert_price(price jsonb) language plpgsql as $$
     declare
@@ -107,22 +109,62 @@ create procedure pr_insert_inventory(inventory jsonb) language plpgsql as $$
 $$;
 
 
-create procedure pr_insert_receivable(_received float, _date date, _cust_id int) language plpgsql as $$
+create procedure pr_insert_receivable(receivable jsonb) language plpgsql as $$
+    declare
+        _date date;
+        _received float;
+        _cust_id int;
+
     begin
+        _date := receivable->>'date';
+        _received := coalesce(nullif(trim(receivable->>'received'),''),'0')::float;
+        _cust_id := (receivable->'references'->>'customer')::integer;
+
         insert into receivables(received, "date", cust_id)
         values(_received, _date, _cust_id);
     end;
 $$;
 
+create procedure pr_insert_sale(sale jsonb) language plpgsql as $$
+    declare
+        _date date;
+        _description text;
+        _quantity int;
+        _other_price float;
+        _inv_id int;
+        _prod_id int;
+        _cust_id int;
 
-create procedure pr_insert_sale(_date date, _description text, _quantity int, _other_price float, _inv_id int, _prod_id int, _cust_id int, _received float) language plpgsql as $$
     begin
-        if trim(_description) = '' then _description := null; end if;
+        _date := sale->>'date';
+        _description := nullif(trim(sale->>'description'),'');
+        _quantity := coalesce(nullif(trim(sale->>'quantity'),''),'0')::integer;
+        _other_price := coalesce(nullif(trim(sale->>'otherPrice'),''),'0')::float;
+        _inv_id := (sale->'references'->>'inventory')::integer;
+        _prod_id := (sale->'references'->>'product')::integer;
+        _cust_id := (sale->'references'->>'customer')::integer;
 
         insert into sales("date", "description", quantity, other_price, inv_id, prod_id, cust_id)
         values(_date, _description, _quantity, _other_price, _inv_id, _prod_id, _cust_id);
 
-        call pr_insert_receivable(_received, _date, _cust_id);
+        call pr_insert_receivable(sale);
     end;
 $$;
 
+select * from sales;
+select * from receivables;
+
+call pr_insert_sale(
+    '{
+        "date":"2025-03-20",
+        "description":"hi",
+        "quantity":7,
+        "otherPrice":300,
+        "references":{
+            "inventory":1,
+            "product":1,
+            "customer":1
+        },
+        "received":200
+    }'
+);

@@ -31,6 +31,7 @@ create procedure pr_update_product(product jsonb) language plpgsql as $$
     end;
 $$;
 
+
 create procedure pr_update_price(price jsonb) language plpgsql as $$
     declare
         _inv_id int;
@@ -60,6 +61,7 @@ create procedure pr_update_price(price jsonb) language plpgsql as $$
     end;
 $$;
 
+
 create procedure pr_update_inventory(inventory jsonb) language plpgsql as $$
     declare
         _id int;
@@ -88,5 +90,8 @@ create procedure pr_update_inventory(inventory jsonb) language plpgsql as $$
         call pr_update_price(jsonb_set(inventory, '{references, inventory}',to_jsonb(_id),true));
     end;
 $$;
+
+
+
 
 select coalesce(nullif(trim('  '),''), '0')::int;
