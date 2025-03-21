@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import pool from './db';
-import customerRouter from './routes/customer-route';
+import customerRouter from './routes/customer.route';
 import supplierRouter from './routes/supplier.route';
 import productRouter from './routes/product.route';
 import inventoryRouter from './routes/inventory.route';
-import { run } from './test';
-run();
+import salesReceiptRouter from './routes/sales-receipt.route';
+// import { run } from './test';
+// run();
 const app = express();
 const PORT = 3000;
 
@@ -17,6 +18,7 @@ app.use('/customer', customerRouter);
 app.use('/supplier', supplierRouter);
 app.use('/product', productRouter);
 app.use('/inventory', inventoryRouter);
+app.use('/sales-receipt', salesReceiptRouter);
 
 app.get('/', async (req, res) => {
     const data = await pool.query('select * from fn_get_products()');
