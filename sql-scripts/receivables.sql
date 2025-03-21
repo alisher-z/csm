@@ -27,3 +27,11 @@ create procedure pr_update_receivable(receipt jsonb) language plpgsql as $$
         where recp_id = (receipt->'references'->>'receipt')::integer;
     end;
 $$;
+
+create procedure pr_delete_receivable(_id int) language plpgsql as $$
+    begin
+        delete from receivables where id = _id;
+    end;
+$$;
+
+call pr_delete_receivable(2);

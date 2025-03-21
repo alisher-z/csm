@@ -57,3 +57,11 @@ create procedure pr_update_sale(receipt jsonb) language plpgsql as $$
         end loop;
     end;
 $$;
+
+create procedure pr_delete_sale(_id int) language plpgsql as $$
+    begin
+        delete from sales where id = _id;
+    end;
+$$;
+
+call pr_delete_sale(1);

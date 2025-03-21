@@ -31,3 +31,32 @@ const a = {
 export function run() {
     console.log(JSON.stringify(a, null, 5));
 }
+
+[{
+    "inv_id": 1,
+    "prices": {
+        "sale": 1200,
+        "purchase": 11001,
+        "otherPrice": 0
+    },
+    "product": {
+        "id": 1,
+        "name": "iphone 6"
+    },
+    "quantity": 3,
+    "description": "item1 description"
+},
+{
+    "inv_id": 1,
+    "prices": {
+        "sale": 1200,
+        "purchase": 11001,
+        "otherPrice": 5
+    },
+    "product": {
+        "id": 1,
+        "name": "iphone 6"
+    },
+    "quantity": 4,
+    "description": "item2 description"
+}]
