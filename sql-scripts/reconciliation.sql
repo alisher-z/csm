@@ -4,3 +4,5 @@ create table reconciliations(
     name varchar(50),
     description text
 );
+
+create procedure pr_insert_reconciliation()

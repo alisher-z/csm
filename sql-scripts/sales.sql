@@ -6,95 +6,7 @@ create table sales(
     price float not null default 0,
     recp_id int not null references sales_receipts(id) on delete cascade on update cascade,
     prod_id int not null references products(id) on delete restrict on update cascade
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+);
 
 drop procedure pr_insert_sale;
 create procedure pr_insert_sale(receipt jsonb) language plpgsql as $$
@@ -109,18 +21,107 @@ create procedure pr_insert_sale(receipt jsonb) language plpgsql as $$
 
         for item in select * from jsonb_array_elements(items)
         loop
-            insert into sales(description, quantity, other_price, inv_id, prod_id, recp_id)
+            insert into sales(description, quantity, price, prod_id, recp_id)
             values(
                 nullif(trim(item->>'description'), ''),
                 coalesce(nullif(trim(item->>'quantity'),''),'0')::integer,
-                coalesce(nullif(trim(item->>'otherPrice'),''),'0')::float,
-                (item->'references'->>'inventory')::integer,
+                coalesce(nullif(trim(item->>'price'),''),'0')::float,
                 (item->'references'->>'product')::integer,
                 receipt_id
             );
         end loop;
     end;
 $$;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 drop procedure pr_update_sale;
 create procedure pr_update_sale(receipt jsonb) language plpgsql as $$

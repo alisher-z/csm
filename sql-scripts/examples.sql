@@ -168,3 +168,38 @@ FROM
 
 
 select * from cash_book;
+
+
+select * from sales_receipts;
+select * from sales;
+select * from reconciliations;
+select * from receivables;
+
+call pr_insert_sales_receipt('{
+    "references": {
+        "customer": 1
+    },
+    "date": "2025-03-22",
+    "name": "Sales Receipt #001",
+    "description": "Sales for March",
+    "gift": "0",
+    "received": "1000",
+    "items": [
+        {
+            "description": "Product A",
+            "quantity": "2",
+            "price": "100",
+            "references": {
+                "product": 1
+            }
+        },
+        {
+            "description": "Product B",
+            "quantity": "3",
+            "price": "150",
+            "references": {
+                "product": 1
+            }
+        }
+    ]
+}');

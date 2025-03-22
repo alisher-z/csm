@@ -1,4 +1,4 @@
-create receivables (
+create table receivables (
     id int generated always as identity primary key,
     recn_id int references reconciliations (id) on delete cascade on update cascade,
     recp_id int references sales_receipts (id) on delete cascade on update cascade,
