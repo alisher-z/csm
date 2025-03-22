@@ -1,8 +1,18 @@
 -- Active: 1742374391022@@127.0.0.1@5432@csm
+drop table sales_receipts;
+create table sales_receipts (
+    id int generated always as identity primary key,
+    cust_id int not null references customers (id) on delete cascade on update cascade,
+    date date,
+    name varchar(50),
+    description text
+);
 
-create table sales_receipts
-     ( id int generated always as identity primary key, "name" varchar(50), cust_id int not null references customers(id) on delete cascade);
-
+drop procedure pr_insert_sales_receipt;
+drop procedure pr_update_sales_receipt;
+drop procedure pr_delete_sales_receipt;
+drop function fn_list_sales_receipt;
+drop function fn_one_sales_receipt;
 
 create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
     declare
@@ -25,7 +35,6 @@ create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
     end;
 $$;
 
-
 create procedure pr_update_sales_receipt(receipt jsonb)language plpgsql as $$
     declare
         _id int;
@@ -47,26 +56,11 @@ create procedure pr_update_sales_receipt(receipt jsonb)language plpgsql as $$
     end;
 $$;
 
-
 create procedure pr_delete_sales_receipt(_id int) language plpgsql as $$
      begin
           delete from sales_receipts where id = _id;
      end;
 $$;
-
-
-select sr.id,
-       c.name,
-       jsonb_agg( jsonb_build_object( 'id',s.id, 'description', s.description, 'quantity', s.quantity, 'prices', jsonb_build_object( 'otherPrice', s.other_price, 'purchase', p.purchase, 'sale', p.sale ), 'product', jsonb_build_object( 'id', pr.id, 'name', pr.name ), 'inv_id', s.inv_id ) ) as sales
-from sales_receipts as sr
-join sales as s on s.recp_id = sr.id
-join customers as c on c.id = sr.cust_id
-join prices as p on p.inv_id = s.inv_id
-and p.prod_id = s.prod_id
-join products as pr on pr.id = s.prod_id
-group by sr.id,
-         c.name;
-
 
 create function fn_list_sales_receipt() returns table( id int, customer varchar, sales jsonb ) language plpgsql as $$
      begin
@@ -133,18 +127,19 @@ create function fn_one_sales_receipt(_id int) returns table( id int, customer va
      end;
 $$;
 
-select * from fn_list_sales_receipt();
-
+select * from fn_list_sales_receipt ();
 
 select *
-from sales_receipts as sr
-join sales as s on s.recp_id = sr.id
-join customers as c on c.id = sr.cust_id
-join prices as p on p.inv_id = s.inv_id
-and p.prod_id = s.prod_id
-join products as pr on pr.id = s.prod_id;
+from
+    sales_receipts as sr
+    join sales as s on s.recp_id = sr.id
+    join customers as c on c.id = sr.cust_id
+    join prices as p on p.inv_id = s.inv_id
+    and p.prod_id = s.prod_id
+    join products as pr on pr.id = s.prod_id;
 
-call pr_insert_sales_receipt('{
+call pr_insert_sales_receipt (
+    '{
      "date": "2025-03-20",
      "received": 200,
      "description": "my description",
@@ -171,9 +166,11 @@ call pr_insert_sales_receipt('{
                }
           }
      ]
-}');
+}'
+);
 
-call pr_insert_sales_receipt('{
+call pr_insert_sales_receipt (
+    '{
      "date": "2025-03-21",
      "received": 0,
      "description": "my description 2",
@@ -200,9 +197,11 @@ call pr_insert_sales_receipt('{
                }
           }
      ]
-}');
+}'
+);
 
-call pr_update_sales_receipt('{
+call pr_update_sales_receipt (
+    '{
      "id": 1,
      "date": "2025-03-21",
      "received": 200,
@@ -232,24 +231,23 @@ call pr_update_sales_receipt('{
                }
           }
      ]
-}');
+}'
+);
 
+select * from sales_receipts;
 
-select *
-from sales_receipts;
+select * from receivables;
 
+select * from sales;
 
-select *
-from receivables;
-
-
-select *
-from sales;
-
-call pr_insert_receivable('{
+call pr_insert_receivable (
+    '{
      "date": "2025-03-22",
      "received": 250,
      "description": "my description1"  
-}') call pr_delete_sales_receipt(1);
+}'
+)
+call pr_delete_sales_receipt (1);
 
 delete from receivables where id = 5;
+

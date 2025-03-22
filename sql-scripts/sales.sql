@@ -1,14 +1,102 @@
+drop table sales;
 create table sales(
     id int generated always as identity primary key,
-    "description" text,
+    description text,
     quantity int not null default 0,
-    other_price float not null default 0,
-    recp_id int not null references sales_receipts(id) on delete cascade,
-    inv_id int not null,
-    prod_id int not null,
-    foreign key (inv_id, prod_id) references prices(inv_id, prod_id)
-);
+    price float not null default 0,
+    recp_id int not null references sales_receipts(id) on delete cascade on update cascade,
+    prod_id int not null references products(id) on delete restrict on update cascade
+)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+drop procedure pr_insert_sale;
 create procedure pr_insert_sale(receipt jsonb) language plpgsql as $$
     declare
         items jsonb;
@@ -34,6 +122,7 @@ create procedure pr_insert_sale(receipt jsonb) language plpgsql as $$
     end;
 $$;
 
+drop procedure pr_update_sale;
 create procedure pr_update_sale(receipt jsonb) language plpgsql as $$
     declare
         items jsonb;
@@ -58,6 +147,7 @@ create procedure pr_update_sale(receipt jsonb) language plpgsql as $$
     end;
 $$;
 
+drop procedure pr_delete_sale;
 create procedure pr_delete_sale(_id int) language plpgsql as $$
     begin
         delete from sales where id = _id;
