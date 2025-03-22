@@ -33,6 +33,22 @@ create procedure pr_insert_sale(receipt jsonb) language plpgsql as $$
     end;
 $$;
 
+create procedure pr_update_sale(receipt jsonb) language plpgsql as $$
+    declare 
+        item jsonb;
+
+    begin
+        for item in select * from jsonb_array_elements(receipt->'items')
+        loop
+            update sales set
+            description = nullif(trim(item->>'description'), ''),
+            quantity = coalesce(nullif(trim(item->>'quantity'),''),'0')::integer,
+            price = coalesce(nullif(trim(item->>'quantity'),''),'0')::integer,
+            prod_id = (item->'references'->>'product')::integer
+            where id = (item->>'id')::int;
+        end loop;
+    end;
+$$;
 
 
 
