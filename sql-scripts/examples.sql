@@ -405,3 +405,52 @@ select * from sales_receipts;
 select * from sales;
 select * from reconciliations;
 select * from receivables;
+
+select sr.id, sr.date, c.id, c.name, sr.description, sr.gift, r.amount
+from sales_receipts as sr
+join customers as c on c.id = sr.cust_id
+join receivables as r on r.recp_id = sr.id;
+
+select
+    s.id, 
+    p.id,
+    p.name,
+    s.description,
+    s.quantity,
+    s.price
+from sales as s
+join products as p on p.id = s.prod_id;
+
+select
+    sr.id,
+    sr.date,
+    sr.description,
+    jsonb_build_object(
+        'id',c.id,
+        'name',c.name
+    ) as customer,
+    jsonb_build_object(
+        'gift',sr.gift,
+        'received',r.amount
+    ) as amounts,
+    jsonb_agg(
+        jsonb_build_object(
+            'id',s.id,
+            'description',s.description,
+            'quantity', s.quantity,
+            'price', s.price,
+            'product', jsonb_build_object(
+                'id',p.id,
+                'name',p.name
+            )
+        )
+    ) as sales
+from sales_receipts as sr
+join customers as c on c.id = sr.cust_id
+join receivables as r on r.recn_id = sr.id
+join sales as s on s.recp_id = sr.id
+join products as p on p.id = s.prod_id
+where sr.id = 2
+group by sr.id, sr.date, sr.description, c.id, c.name, sr.gift, r.amount;
+
+select * from fn_one_sales_receipt(2);

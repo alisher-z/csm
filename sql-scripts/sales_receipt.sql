@@ -11,6 +11,7 @@ create table sales_receipts (
 );
 
 drop procedure pr_insert_sales_receipt;
+
 create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
     declare
           receipt_id int;
@@ -54,6 +55,7 @@ create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
 $$;
 
 drop function fn_list_sales_receipt;
+
 create function fn_list_sales_receipt()
 returns table(id int, cust_id int, date date, description text, gift float)
 language plpgsql as $$
@@ -64,10 +66,55 @@ language plpgsql as $$
      end;
 $$;
 
-select * from fn_list_sales_receipt();
+drop function fn_one_sales_receipt;
+create function fn_one_sales_receipt(_id int) 
+returns 
+table( 
+     id int,
+     date date,
+     description text,
+     customer jsonb,
+     amounts jsonb,
+     sales jsonb 
+     ) language plpgsql as $$
+     begin
+          return query
+          select
+               sr.id,
+               sr.date,
+               sr.description,
+               jsonb_build_object(
+                    'id',c.id,
+                    'name',c.name
+               ) as customer,
+               jsonb_build_object(
+                    'gift',sr.gift,
+                    'received',r.amount
+               ) as amounts,
+               jsonb_agg(
+                    jsonb_build_object(
+                         'id',s.id,
+                         'description',s.description,
+                         'quantity', s.quantity,
+                         'price', s.price,
+                         'product', jsonb_build_object(
+                              'id',p.id,
+                              'name',p.name
+                         )
+                    )
+               ) as sales
+          from sales_receipts as sr
+          join customers as c on c.id = sr.cust_id
+          join receivables as r on r.recn_id = sr.id
+          join sales as s on s.recp_id = sr.id
+          join products as p on p.id = s.prod_id
+          where sr.id = _id
+          group by sr.id, sr.date, sr.description, c.id, c.name, sr.gift, r.amount;
+     end;
+$$;
 
--- create function fn_list_sales_receipt() 
--- returns table( id int, customer varchar, sales jsonb ) 
+-- create function fn_list_sales_receipt()
+-- returns table( id int, customer varchar, sales jsonb )
 -- language plpgsql as $$
 --      begin
 --           return query
@@ -122,8 +169,6 @@ drop procedure pr_delete_sales_receipt;
 
 drop function fn_list_sales_receipt;
 
-drop function fn_one_sales_receipt;
-
 create procedure pr_update_sales_receipt(receipt jsonb)language plpgsql as $$
     declare
         _id int;
@@ -148,39 +193,6 @@ $$;
 create procedure pr_delete_sales_receipt(_id int) language plpgsql as $$
      begin
           delete from sales_receipts where id = _id;
-     end;
-$$;
-
-create function fn_one_sales_receipt(_id int) returns table( id int, customer varchar, sales jsonb ) language plpgsql as $$
-     begin
-          return query
-          select
-               sr.id,
-               c.name,
-               jsonb_agg(
-                    jsonb_build_object(
-                         'id',s.id,
-                         'description', s.description,
-                         'quantity', s.quantity,
-                         'prices', jsonb_build_object(
-                         'otherPrice', s.other_price,
-                         'purchase', p.purchase,
-                         'sale', p.sale
-                         ),
-                         'product', jsonb_build_object(
-                              'id', pr.id,
-                              'name', pr.name
-                         ),
-                         'inv_id', s.inv_id
-                    )
-               ) as sales
-          from sales_receipts as sr
-          join sales as s on s.recp_id = sr.id
-          join customers as c on c.id = sr.cust_id
-          join prices as p on p.inv_id = s.inv_id and p.prod_id = s.prod_id
-          join products as pr on pr.id = s.prod_id
-          where sr.id = _id
-          group by sr.id, c.name;
      end;
 $$;
 

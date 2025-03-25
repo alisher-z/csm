@@ -50,8 +50,6 @@ export abstract class MainORM extends DBQuery {
 
     async list(): Promise<DBResult> {
         const result = this.getFunctionQuery(this.listString);
-        if (this.model === 'product')
-            console.log(await result)
         return await (this.attempt(result));
     }
 
@@ -61,7 +59,6 @@ export abstract class MainORM extends DBQuery {
     }
     async insert(data: any) {
         data = JSON.stringify(data);
-        console.log(data);
         const result = this.getProcedureQuery(this.insertString, data);
         return await (this.attempt(result));
     }

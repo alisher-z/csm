@@ -43,6 +43,7 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
         this.calculateDue();
       })!
     );
+    effect(() => console.log(this.data()));
   }
   addFormItem() {
     this.items.push(this.createItem());
@@ -133,6 +134,42 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
   }
 
   setForm(): void {
+    const a = {
+      "id": 3,
+      "date": "2025-03-24T21:00:00.000Z",
+      "description": null,
+      "customer": {
+        "id": 1,
+        "name": "Zabiullah"
+      },
+      "amounts": {
+        "gift": 0,
+        "received": 1505
+      },
+      "sales": [
+        {
+          "id": 4,
+          "price": 5,
+          "product": {
+            "id": 1,
+            "name": "iphone 6"
+          },
+          "quantity": 1,
+          "description": null
+        },
+        {
+          "id": 5,
+          "price": 1500,
+          "product": {
+            "id": 2,
+            "name": "iphone 7"
+          },
+          "quantity": 1,
+          "description": null
+        }
+      ]
+    };
+
 
   }
 

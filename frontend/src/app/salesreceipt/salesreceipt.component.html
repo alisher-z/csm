@@ -1,2 +1,13 @@
 <router-outlet />
-<p>salesreceipt works!</p>
+<gridview>
+    <ng-container>
+        <th>Customer</th>
+        <th>Date</th>
+        <th>Discount</th>
+    </ng-container>
+    <ng-template #row let-item>
+        <td>{{item.cust_id}}</td>
+        <td>{{item.date|date}}</td>
+        <td>{{item.gift}}</td>
+    </ng-template>
+</gridview>
