@@ -1,2 +1,4 @@
-<label>{{caption}}</label>
-<input type="date" [value]="value" (change)="input($event)">
+<label class="input-label">
+    {{caption}}
+</label>
+<input class="form-input" [class.border]="border" type="date" [value]="value" (change)="input($event)">

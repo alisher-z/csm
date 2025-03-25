@@ -1,5 +1,6 @@
-<label>
+<label class="input-label">
     {{caption}}
-    <span>&colon;</span>
+    <!-- <span>&colon;</span> -->
 </label>
-<input type="text" [value]="value" (input)="input($event)" (blur)="touched()">
+<input type="text" class="form-input" [class.border]="border" [value]="value" [disabled]="disabled"
+    (input)="input($event)" (blur)="touched()">

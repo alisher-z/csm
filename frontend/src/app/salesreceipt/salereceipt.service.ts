@@ -4,6 +4,6 @@ import { MainService } from '../components/main.service';
 @Injectable({
   providedIn: 'root'
 })
-export class SalereceiptService extends MainService {
+export class SaleReceiptService extends MainService {
   protected override path = 'sales-receipt';
 }

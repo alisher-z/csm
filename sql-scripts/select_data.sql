@@ -155,17 +155,34 @@ as $$
     end;
 $$;
 
+drop function fn_list_product;
 create function fn_list_product()
 returns table(
     id int,
     name varchar,
-    description text
+    description text,
+    quantity int,
+    purchase float,
+    sale float
 ) language plpgsql
 as $$
     begin
         return query
-        select p.id, p.name, p.description
-        from products as p;
+            with _inventories as (
+                select _i.prod_id, sum(_i.quantity)::int as quantity from inventories as _i group by _i.prod_id
+                )
+            select 
+                p.id, 
+                p.name, 
+                p.description, 
+                i.quantity, 
+                pr.purchase, 
+                pr.sale
+            from products as p
+            join _inventories as i on i.prod_id = p.id
+            join prices as pr on pr.prod_id = p.id
+            where pr.current = true
+            order by id;
     end;
 $$;
 

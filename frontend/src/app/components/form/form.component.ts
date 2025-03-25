@@ -18,21 +18,22 @@ export class MainFormComponent {
   clientService = this.service.service;
 
   submit() {
-    // console.log(this.form.value);
-    this.form.markAllAsTouched()
-    if (this.form.invalid)
-      return;
+    console.log(this.form.value);
+    this.form.markAllAsTouched();
+    console.log(this.form.invalid);
+    // if (this.form.invalid)
+    //   return;
 
-    this.send.emit();
+    // this.send.emit();
 
-    const send = this.service.id
-      ? this.clientService.update(this.service.id, this.form.value)
-      : this.clientService.insert(this.form.value);
+    // const send = this.service.id
+    //   ? this.clientService.update(this.service.id, this.form.value)
+    //   : this.clientService.insert(this.form.value);
 
-    send.subscribe((data) => {
-      console.log(data);
-      this.clientService.listReferesh.set('');
-    });
+    // send.subscribe((data) => {
+    //   console.log(data);
+    //   this.clientService.listReferesh.set('');
+    // });
   }
   get close() {
     return this.service.close();

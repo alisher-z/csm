@@ -11,7 +11,6 @@ create table sales_receipts (
 );
 
 drop procedure pr_insert_sales_receipt;
-
 create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
     declare
           receipt_id int;
@@ -44,11 +43,12 @@ create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
           nullif(trim(receipt->>'description'),'')
         ) returning id into reconciliation_id;
 
-        insert into receivables(recn_id, recp_id, amount)
+        insert into receivables(recn_id, recp_id, amount, is_receipt)
         values(
           reconciliation_id,
           receipt_id,
-          coalesce(nullif(trim(receipt->>'received'),''),'0')::float
+          coalesce(nullif(trim(receipt->>'received'),''),'0')::float,
+          1
         );
     end;
 $$;

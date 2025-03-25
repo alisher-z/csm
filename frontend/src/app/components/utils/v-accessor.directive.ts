@@ -6,7 +6,9 @@ import { ControlValueAccessor } from '@angular/forms';
 })
 export class VAccessorDirective implements ControlValueAccessor {
   @Input() caption!: string;
+  @Input() border = true;
 
+  disabled: boolean = false;
   value: string | null = null;
 
   change!: (v: string) => void;
@@ -15,6 +17,7 @@ export class VAccessorDirective implements ControlValueAccessor {
   writeValue(v: string) { this.value = v; }
   registerOnChange(fn: any) { this.change = fn; }
   registerOnTouched(fn: any) { this.touched = fn; }
+  setDisabledState(d: boolean) { this.disabled = d; }
 
   input({ target }: Event) {
     this.value = (<HTMLInputElement>target).value;

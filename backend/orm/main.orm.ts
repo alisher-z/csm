@@ -50,6 +50,8 @@ export abstract class MainORM extends DBQuery {
 
     async list(): Promise<DBResult> {
         const result = this.getFunctionQuery(this.listString);
+        if (this.model === 'product')
+            console.log(await result)
         return await (this.attempt(result));
     }
 

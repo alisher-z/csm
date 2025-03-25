@@ -363,3 +363,39 @@ from
 group by
     sr.id,
     c.name;
+
+with _inventories as (
+    select prod_id, sum(quantity) as quantity from inventories group by prod_id
+)
+select p.id, p.name, p.description, i.quantity, pr.purchase, pr.sale
+from products as p
+join _inventories as i on i.prod_id = p.id
+join prices as pr on pr.prod_id = p.id
+where pr.current = true
+order by id;
+select * from inventories;
+select * from prices;
+
+update prices set current = TRUE where prod_id = 2;
+update prices set
+purchase = 4,
+sale = 5
+where prod_id = 1 and current = true;
+
+select * from fn_list_product();
+
+with _inventories as (
+                select _i.prod_id, sum(_i.quantity) as quantity from inventories as _i group by _i.prod_id
+                )
+            select 
+                p.id, 
+                p.name, 
+                p.description, 
+                i.quantity, 
+                pr.purchase, 
+                pr.sale
+            from products as p
+            join _inventories as i on i.prod_id = p.id
+            join prices as pr on pr.prod_id = p.id
+            where pr.current = true
+            order by id;

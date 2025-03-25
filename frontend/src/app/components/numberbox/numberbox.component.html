@@ -1,2 +1,3 @@
-<label>{{caption}}</label>
-<input type="number" [value]="value" min="0" (change)="input($event)">
+<label class="input-label">{{caption}}</label>
+<input class="form-input" [class.border]="border" type="number" [value]="value" min="0" [disabled]="disabled"
+    (change)="input($event)">
