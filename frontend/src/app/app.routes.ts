@@ -9,6 +9,7 @@ import { InventoryComponent } from './inventory/inventory.component';
 import { InventoryFormComponent } from './inventory/form/form.component';
 import { SalesReceiptComponent } from './salesreceipt/salesreceipt.component';
 import { SalesReceiptFormComponent } from './salesreceipt/form/form.component';
+import { HomeComponent } from './home/home.component';
 
 export const routes: Routes = [
     {
@@ -71,5 +72,9 @@ export const routes: Routes = [
                 component: SalesReceiptFormComponent
             }
         ]
+    },
+    {
+        path: '',
+        component: HomeComponent
     }
 ];

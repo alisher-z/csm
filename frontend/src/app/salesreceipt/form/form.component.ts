@@ -187,19 +187,21 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
     customer.setValue(receipt.customer.id, { emitEvent: false });
 
     _items.forEach((sale: any) => {
-      const item = this.createItem({
-        description: sale.description,
-        quantity: sale.quantity,
-        price: sale.price,
-        product: sale.product.id
-      });
-      // const { description, quantity, price } = item.controls;
-      // const { product } = (<FormGroup>item.get('references')).controls;
+      const item = this.createItem(
+        //   {
+        //   description: sale.description,
+        //   quantity: sale.quantity,
+        //   price: sale.price,
+        //   product: sale.product.id
+        // }
+      );
+      const { description, quantity, price } = item.controls;
+      const { product } = (<FormGroup>item.get('references')).controls;
 
-      // description.setValue(sale.description);
-      // quantity.setValue(sale.quantity, { emitEvent: false });
-      // price.setValue(sale.price, { emitEvent: false });
-      // product.setValue(sale.product.id);
+      description.setValue(sale.description);
+      quantity.setValue(sale.quantity, { emitEvent: false });
+      price.setValue(sale.price, { emitEvent: false });
+      product.setValue(sale.product.id);
 
       // console.log(item.value);
       this.items.push(item);
