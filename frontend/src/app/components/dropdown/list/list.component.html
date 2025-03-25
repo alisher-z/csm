@@ -1,1 +1,14 @@
-<p>list works!</p>
+<table>
+    <thead>
+        <tr>
+            <ng-content></ng-content>
+        </tr>
+    </thead>
+    <tbody>
+        @for(item of filtered; track item.id){
+        <tr>
+            <ng-container *ngTemplateOutlet="line; context:{$implicit:item}"></ng-container>
+        </tr>
+        }
+    </tbody>
+</table>
