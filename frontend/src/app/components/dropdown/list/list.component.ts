@@ -9,7 +9,7 @@ import { NgTemplateOutlet } from '@angular/common';
   styleUrl: './list.component.scss'
 })
 export class DropdownListComponent {
-  @ContentChild('line') line: TemplateRef<any> | null = null;
+  @ContentChild('dropdown') template: TemplateRef<any> | null = null;
 
   service = inject(DropdownService);
 

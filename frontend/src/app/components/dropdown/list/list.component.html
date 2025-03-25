@@ -7,7 +7,7 @@
     <tbody>
         @for(item of filtered; track item.id){
         <tr>
-            <ng-container *ngTemplateOutlet="line; context:{$implicit:item}"></ng-container>
+            <ng-container *ngTemplateOutlet="template; context:{$implicit:item}"></ng-container>
         </tr>
         }
     </tbody>
