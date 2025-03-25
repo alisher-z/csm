@@ -61,6 +61,7 @@ export abstract class MainORM extends DBQuery {
     }
     async insert(data: any) {
         data = JSON.stringify(data);
+        console.log(data);
         const result = this.getProcedureQuery(this.insertString, data);
         return await (this.attempt(result));
     }

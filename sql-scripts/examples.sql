@@ -399,3 +399,9 @@ with _inventories as (
             join prices as pr on pr.prod_id = p.id
             where pr.current = true
             order by id;
+
+
+select * from sales_receipts;
+select * from sales;
+select * from reconciliations;
+select * from receivables;

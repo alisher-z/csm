@@ -43,7 +43,6 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
         this.calculateDue();
       })!
     );
-    effect(() => console.log(this.products()))
   }
   addFormItem() {
     this.items.push(this.createItem());
@@ -56,7 +55,6 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
     const item = this.fb.group({
       description: [],
       quantity: [1, [Validators.required, Validators.min(1)]],
-      inStock: [{ value: 0, disabled: true }],
       price: [{ value: 0, disabled: true }],
       total: [{ value: 0, disabled: true }],
       references: this.fb.group({

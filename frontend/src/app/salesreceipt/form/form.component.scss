@@ -195,3 +195,11 @@ tfoot {
         grid-column: 1/5;
     }
 }
+
+.price-input {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    height: 100%;
+    padding-right: 7px;
+}
