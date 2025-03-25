@@ -1,7 +1,8 @@
 <label class="input-label">
     {{caption}}
 </label>
-<select class="form-input" [class.border]="border" [value]="value" (change)="input($event)">
+<select class="form-input" [class.border]="border" [value]="value" (input)="input($event)" (change)="input($event)">
+    <option value="-1">select product</option>
     @for(option of options(); track option.id){
     <option [value]="option.id">
         {{option.name}}

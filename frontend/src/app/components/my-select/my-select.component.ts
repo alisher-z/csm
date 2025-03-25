@@ -13,21 +13,24 @@ import { VAccessorDirective } from '../utils/v-accessor.directive';
   templateUrl: './my-select.component.html',
   styleUrl: './my-select.component.scss'
 })
-export class MySelectComponent extends VAccessorDirective {
+export class MySelectComponent extends VAccessorDirective implements AfterViewInit {
   @Input() options: WritableSignal<{ id: string, name: string }[] | undefined> = signal([]);
 
   constructor() {
     super();
-    effect(() => {
-      if (!this.options())
-        return;
+    // effect(() => {
+    //   if (!this.options())
+    //     return;
 
-      const values = this.options();
-      if (values && values.length > 0) {
-        this.value = values[0].id;
-        this.change(this.value);
-        this.touched();
-      }
-    })
+    //   const values = this.options();
+    //   if (values && values.length > 0) {
+    //     this.value = values[0].id;
+    //     this.change(this.value);
+    //     this.touched();
+    //   }
+    // })
+  }
+  ngAfterViewInit(): void {
+    // console.log('the product id', this.value);
   }
 }

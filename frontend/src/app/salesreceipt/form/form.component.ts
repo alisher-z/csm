@@ -43,7 +43,10 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
         this.calculateDue();
       })!
     );
-    effect(() => console.log(this.data()));
+    // effect(() => console.log(this.data()));
+
+    if (this.id)
+      effect(() => !this.loading() ? this.setForm() : null);
   }
   addFormItem() {
     this.items.push(this.createItem());
@@ -52,14 +55,14 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
     this.items.removeAt(index);
   }
 
-  createItem() {
+  createItem({ description = '', quantity = 1, price = 0, product = -1 }: { description?: string, quantity?: number, price?: number, product?: number } = {}) {
     const item = this.fb.group({
-      description: [],
-      quantity: [1, [Validators.required, Validators.min(1)]],
-      price: [{ value: 0, disabled: true }],
+      description: [description],
+      quantity: [quantity, [Validators.required, Validators.min(1)]],
+      price: [{ value: price, disabled: true }],
       total: [{ value: 0, disabled: true }],
       references: this.fb.group({
-        product: [0, Validators.required]
+        product: [product, Validators.required]
       })
     });
 
@@ -170,7 +173,37 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
       ]
     };
 
+    const { date, description, gift, received } = this.form.controls;
+    const { customer } = (<FormGroup>this.form.get('references')).controls;
+    const receipt = this.data();
+    const _items: any[] = receipt.sales;
 
+    this.items.removeAt(0);
+
+    date.setValue(formatDate(receipt.date, 'yyyy-MM-dd', 'en'), { emitEvent: false });
+    description.setValue(receipt.description, { emitEvent: false });
+    gift.setValue(receipt.amounts.gift);
+    received.setValue(receipt.amounts.received);
+    customer.setValue(receipt.customer.id, { emitEvent: false });
+
+    _items.forEach((sale: any) => {
+      const item = this.createItem({
+        description: sale.description,
+        quantity: sale.quantity,
+        price: sale.price,
+        product: sale.product.id
+      });
+      // const { description, quantity, price } = item.controls;
+      // const { product } = (<FormGroup>item.get('references')).controls;
+
+      // description.setValue(sale.description);
+      // quantity.setValue(sale.quantity, { emitEvent: false });
+      // price.setValue(sale.price, { emitEvent: false });
+      // product.setValue(sale.product.id);
+
+      // console.log(item.value);
+      this.items.push(item);
+    });
   }
 
   get items() {
