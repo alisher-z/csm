@@ -19,9 +19,17 @@ export class DropdownComponent implements AfterViewInit {
 
   constructor() {
     effect(() => {
-      this.service.data.set(this.data());
-      this.service.filtered.set(this.data());
+      const data = this.data();
+      if (!data) return;
+
+      data.forEach(d => d.marked = d.name);
+
+      this.service.data.set(data);
+      this.service.filtered.set(data);
     });
+  }
+  get show() {
+    return this.service.showList();
   }
 
   ngAfterViewInit(): void {
@@ -29,7 +37,9 @@ export class DropdownComponent implements AfterViewInit {
     // console.log(this.el.nativeElement);
   }
   @HostListener('document:click', ['$event'])
-  onDocClick(event: MouseEvent) {
-    console.log((event.target as HTMLElement).closest('dropdown'));
+  onDocClick({ target }: MouseEvent) {
+    const tagName = (<HTMLElement>target).closest('dropdown')?.tagName;
+    if (!tagName)
+      this.service.showList.set(false);
   }
 }

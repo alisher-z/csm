@@ -19,7 +19,6 @@ export class InputDirective {
 
   private init() {
     this.textbox = this.el.nativeElement;
-    this.initFiltered();
   }
 
   @HostListener('input') input() {
@@ -125,13 +124,6 @@ export class InputDirective {
     )
   }
 
-  private initFiltered() {
-    this.data
-      ?.forEach(d =>
-        d.marked = this.sanitizer
-          .bypassSecurityTrustHtml(d.name)
-      );
-  }
   private show() {
     this.service.showList.set(true);
   }

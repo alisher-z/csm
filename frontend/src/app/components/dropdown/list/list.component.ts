@@ -1,13 +1,13 @@
 import { AfterViewInit, Component, ContentChild, effect, ElementRef, inject, OnDestroy, QueryList, TemplateRef, ViewChildren } from '@angular/core';
 import { DropdownService } from '../dropdown.service';
-import { NgTemplateOutlet } from '@angular/common';
+import { JsonPipe, NgTemplateOutlet } from '@angular/common';
 import { Subscription } from 'rxjs';
 
 type BlockType = 'center' | 'end' | 'nearest' | 'start';
 
 @Component({
   selector: 'dropdown-list',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, JsonPipe],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
@@ -50,9 +50,9 @@ export class DropdownListComponent implements OnDestroy, AfterViewInit {
 
     return null;
   }
-  get show() {
-    return this.service.showList();
-  }
+  // get show() {
+  //   return this.service.showList();
+  // }
   ngAfterViewInit(): void {
     this.tblRows = this.rows.toArray();
   }
