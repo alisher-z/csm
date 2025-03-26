@@ -48,6 +48,7 @@ export class InputDirective {
 
   @HostListener('keydown', ['$event'])
   keydown({ key }: KeyboardEvent) {
+    console.log(key);
     const filtered = this.service.filtered();
 
     if (!filtered) return;
@@ -60,7 +61,15 @@ export class InputDirective {
       this.enter();
 
     if (this.index >= 0)
-      this.service.arrow.emit(this.index);
+      setTimeout(() =>
+        this.service.arrow.emit(this.index), 0);
+
+  }
+  @HostListener('keyup', ['$event'])
+  keyup({ key }: KeyboardEvent) {
+    const keys = ['ArrowUp', 'ArrowDown'];
+    if (keys.includes(key))
+      this.textbox.select();
   }
 
   get data() {
@@ -68,7 +77,10 @@ export class InputDirective {
   }
 
   private enter() {
+    if (this.index < 0) return;
 
+    this.textbox.value = this.service.item().name;
+    this.hide();
   }
 
   private selectItem(data: any[]) {
@@ -77,14 +89,23 @@ export class InputDirective {
 
     this.service.item.set(data[0]);
     this.index = 0;
+    this.service.arrow.emit(this.index);
   }
 
   private arrowUp() {
+    if (!this.service.showList()) return;
     this.downIndex();
+    this.service.item.set(this.service.filtered()[this.index])
     setTimeout(() => this.textbox.setSelectionRange(-1, -1), 0);
+    this.textbox.value = this.service.item().name;
   }
   private arrowDown(data: any[]) {
+    if (!this.service.showList())
+      return this.show();
+
     this.upIndex(data.length);
+    this.service.item.set(this.service.filtered()[this.index]);
+    this.textbox.value = this.service.item().name;
   }
   private upIndex(max: number) {
     if (max > 1)
