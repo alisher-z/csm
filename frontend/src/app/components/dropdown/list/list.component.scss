@@ -3,6 +3,10 @@
     height: auto;
     max-height: 300px;
     overflow: auto;
+    position: absolute;
+    // top: 0;
+    background-color: var(--brown);
+    // z-index: 5;
 }
 
 table {

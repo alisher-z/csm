@@ -35,6 +35,7 @@ export class InputDirective {
   @HostListener('focus')
   focus() {
     this.textbox.select();
+    this.show();
   }
 
   @HostListener('blur')
@@ -44,6 +45,8 @@ export class InputDirective {
 
     if (this.service.item())
       this.textbox.value = this.service.item().name;
+
+    this.hide();
   }
 
   @HostListener('keydown', ['$event'])
@@ -130,5 +133,11 @@ export class InputDirective {
         d.marked = this.sanitizer
           .bypassSecurityTrustHtml(d.name)
       );
+  }
+  private show() {
+    this.service.showList.set(true);
+  }
+  private hide() {
+    this.service.showList.set(false);
   }
 }

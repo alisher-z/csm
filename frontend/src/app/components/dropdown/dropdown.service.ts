@@ -7,7 +7,8 @@ export class DropdownService {
   data = signal<any[] | undefined>(undefined);
   filtered = signal<any[] | undefined>([]);
   item = signal<any | null>(null);
-  index = signal(0);
+  showList = signal<boolean>(false);
+
   arrow = new EventEmitter<number>();
 
   constructor() {
