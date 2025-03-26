@@ -6,6 +6,7 @@ import { effect, Injectable, signal, WritableSignal } from '@angular/core';
 export class DropdownService {
   data = signal<any[] | undefined>(undefined);
   filtered = signal<any[] | undefined>([]);
+  item = signal<any | null>(null);
 
   constructor() {
   }

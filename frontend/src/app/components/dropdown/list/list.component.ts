@@ -16,4 +16,10 @@ export class DropdownListComponent {
   get filtered() {
     return this.service.filtered();
   }
+  get id() {
+    if (this.service.item())
+      return this.service.item().id;
+
+    return null;
+  }
 }
