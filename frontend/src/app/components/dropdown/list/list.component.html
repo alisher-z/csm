@@ -6,7 +6,7 @@
     </thead>
     <tbody>
         @for(item of filtered; track item.id){
-        <tr [class.active]="item.id === id">
+        <tr [class.active]="$index === index" #rows>
             <ng-container *ngTemplateOutlet="template; context:{$implicit:item}"></ng-container>
         </tr>
         }

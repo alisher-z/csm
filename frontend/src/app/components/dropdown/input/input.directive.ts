@@ -10,90 +10,125 @@ export class InputDirective {
   service = inject(DropdownService);
   sanitizer = inject(DomSanitizer);
 
-  textbox: HTMLInputElement;
-  index = 0;
+  textbox!: HTMLInputElement;
+  index = -1;
 
   constructor() {
+    this.init();
+  }
+
+  private init() {
     this.textbox = this.el.nativeElement;
-    this.data?.forEach(d => d.marked = this.sanitizer.bypassSecurityTrustHtml(d.name));
+    this.initFiltered();
   }
 
   @HostListener('input') input() {
-    const filtered = this.filteredData;
+    const filtered = this.getFiltered(this.textbox.value);
+
+    if (!filtered) return;
+
     this.sort(filtered);
     this.service.filtered.set(filtered);
     this.selectItem(filtered);
   }
-  @HostListener('focus') focus() {
+
+  @HostListener('focus')
+  focus() {
     this.textbox.select();
   }
-  @HostListener('blur') blur() {
+
+  @HostListener('blur')
+  blur() {
     if (this.textbox.value === '')
       this.service.item.set(null);
 
     if (this.service.item())
       this.textbox.value = this.service.item().name;
   }
-  @HostListener('keydown', ['$event']) keydown({ key }: KeyboardEvent) {
-    if (key === 'ArrowUp')
-      if (this.index < this.service.filtered()?.length!)
-        this.index++;
 
-    console.log(this.index);
+  @HostListener('keydown', ['$event'])
+  keydown({ key }: KeyboardEvent) {
+    const filtered = this.service.filtered();
+
+    if (!filtered) return;
+
+    if (key == 'ArrowDown')
+      this.arrowDown(filtered);
+    else if (key == 'ArrowUp')
+      this.arrowUp();
+    else if (key == 'Enter')
+      this.enter();
+
+    if (this.index >= 0)
+      this.service.arrow.emit(this.index);
   }
 
   get data() {
     return this.service.data();
   }
 
-  get filteredData() {
-    const value = this.textbox.value.toLowerCase();
+  private enter() {
 
-    const a = this.data?.filter((d) => {
-      if (d.name.toLowerCase().startsWith(value)) {
-        const regex = new RegExp(`^(${value})`, 'gi');
-        const highlighted = d.name.replace(regex, '<mark>$1</mark>');
-        d.marked = this.sanitizer.bypassSecurityTrustHtml(highlighted);
-
-        return true;
-      } else
-        return false;
-    })
-    console.log(a);
-    return this.data?.filter(d => d.name.toLowerCase().startsWith(value));
   }
-  // selectPart(input: HTMLInputElement) {
-  //   if (!this.service.item()) return;
 
-  //   const text: string = input.value;
-  //   const name: string = this.service.item().name
-
-  //   const start = text.length;
-  //   const end = name.length;
-
-  //   const fullText = text + name.substring(start, end);
-  //   console.log(fullText);
-
-  //   // input.setSelectionRange(0, 1);
-  // }
-
-  sort(data: any[] | undefined) {
-    if (!data)
-      return;
-
-    data.sort((a, b) =>
-      (<string>a.name).toLowerCase()
-        .localeCompare((<string>b.name))
-    )
-  }
-  selectItem(data: any[] | undefined) {
-    if (!data)
-      return this.service.item.set(null);
-
+  private selectItem(data: any[]) {
     if (data.length < 1)
       return this.service.item.set(null);
 
     this.service.item.set(data[0]);
     this.index = 0;
+  }
+
+  private arrowUp() {
+    this.downIndex();
+    setTimeout(() => this.textbox.setSelectionRange(-1, -1), 0);
+  }
+  private arrowDown(data: any[]) {
+    this.upIndex(data.length);
+  }
+  private upIndex(max: number) {
+    if (max > 1)
+      if (this.index < max - 1)
+        this.index++;
+  }
+  private downIndex() {
+    if (this.index > 0)
+      this.index--;
+  }
+
+  private getFiltered(text: string) {
+    text = text.toLowerCase();
+    if (!this.data) return;
+
+    return this.data.filter(d => {
+      const name: string = (<string>d.name).toLowerCase();
+
+      if (!name.startsWith(text))
+        return false;
+
+      const regex = new RegExp(`^(${text})`, 'gi');
+      const marked = name.replace(regex, '<mark>$1</mark>');
+
+      d.marked = this.sanitizer.bypassSecurityTrustHtml(marked);
+      return true;
+    });
+  }
+
+  private sort(data: any[]) {
+    data.sort((a, b) =>
+      (<string>a.name)
+        .toLowerCase()
+        .localeCompare(
+          (<string>b.name).toLowerCase()
+        )
+    )
+  }
+
+  private initFiltered() {
+    this.data
+      ?.forEach(d =>
+        d.marked = this.sanitizer
+          .bypassSecurityTrustHtml(d.name)
+      );
   }
 }
