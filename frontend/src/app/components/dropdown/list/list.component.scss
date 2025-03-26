@@ -3,11 +3,25 @@
     height: auto;
     max-height: 300px;
     overflow: auto;
-    background-color: red;
 }
 
 table {
+    border-collapse: collapse;
+    width: 100%;
+
     tr.active {
-        background-color: blue;
+        background-color: rgba(#fff, .07);
+    }
+
+    tr {
+        border: 1px solid rgba(#fff, .1);
+
+        ::ng-deep {
+
+            td,
+            th {
+                padding: 5px 7px;
+            }
+        }
     }
 }

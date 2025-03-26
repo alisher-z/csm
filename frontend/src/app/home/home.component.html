@@ -2,6 +2,6 @@
 <dropdown [data]="customers">
     <!-- <th>hello</th> -->
     <ng-template #line let-item>
-        <td>{{item.name}}</td>
+        <td [innerHTML]="item.marked"></td>
     </ng-template>
 </dropdown>

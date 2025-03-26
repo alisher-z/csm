@@ -1,5 +1,6 @@
 import { Directive, effect, ElementRef, HostListener, inject } from '@angular/core';
 import { DropdownService } from '../dropdown.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Directive({
   selector: '[input-events]'
@@ -7,10 +8,14 @@ import { DropdownService } from '../dropdown.service';
 export class InputDirective {
   el = inject(ElementRef);
   service = inject(DropdownService);
+  sanitizer = inject(DomSanitizer);
+
   textbox: HTMLInputElement;
+  index = 0;
 
   constructor() {
     this.textbox = this.el.nativeElement;
+    this.data?.forEach(d => d.marked = this.sanitizer.bypassSecurityTrustHtml(d.name));
   }
 
   @HostListener('input') input() {
@@ -18,7 +23,6 @@ export class InputDirective {
     this.sort(filtered);
     this.service.filtered.set(filtered);
     this.selectItem(filtered);
-    // this.selectPart(this.textbox);
   }
   @HostListener('focus') focus() {
     this.textbox.select();
@@ -30,6 +34,13 @@ export class InputDirective {
     if (this.service.item())
       this.textbox.value = this.service.item().name;
   }
+  @HostListener('keydown', ['$event']) keydown({ key }: KeyboardEvent) {
+    if (key === 'ArrowUp')
+      if (this.index < this.service.filtered()?.length!)
+        this.index++;
+
+    console.log(this.index);
+  }
 
   get data() {
     return this.service.data();
@@ -38,6 +49,17 @@ export class InputDirective {
   get filteredData() {
     const value = this.textbox.value.toLowerCase();
 
+    const a = this.data?.filter((d) => {
+      if (d.name.toLowerCase().startsWith(value)) {
+        const regex = new RegExp(`^(${value})`, 'gi');
+        const highlighted = d.name.replace(regex, '<mark>$1</mark>');
+        d.marked = this.sanitizer.bypassSecurityTrustHtml(highlighted);
+
+        return true;
+      } else
+        return false;
+    })
+    console.log(a);
     return this.data?.filter(d => d.name.toLowerCase().startsWith(value));
   }
   // selectPart(input: HTMLInputElement) {
@@ -72,5 +94,6 @@ export class InputDirective {
       return this.service.item.set(null);
 
     this.service.item.set(data[0]);
+    this.index = 0;
   }
 }
