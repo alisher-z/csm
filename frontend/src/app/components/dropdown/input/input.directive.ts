@@ -45,8 +45,6 @@ export class InputDirective {
 
     if (this.service.item())
       this.textbox.value = this.service.item().name;
-
-    this.hide();
   }
 
   @HostListener('keydown', ['$event'])

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ContentChild, effect, ElementRef, inject, Input, signal, TemplateRef, WritableSignal } from '@angular/core';
+import { AfterViewInit, Component, ContentChild, effect, ElementRef, HostListener, inject, Input, signal, TemplateRef, WritableSignal } from '@angular/core';
 import { DropdwonInputComponent } from "./input/input.component";
 import { DropdownListComponent } from "./list/list.component";
 import { DropdownService } from './dropdown.service';
@@ -15,6 +15,7 @@ export class DropdownComponent implements AfterViewInit {
   @ContentChild('line') line: TemplateRef<any> | null = null;
 
   service = inject(DropdownService);
+  el = inject(ElementRef)
 
   constructor() {
     effect(() => {
@@ -26,5 +27,9 @@ export class DropdownComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     // this.service.data = this.data;
     // console.log(this.el.nativeElement);
+  }
+  @HostListener('document:click', ['$event'])
+  onDocClick(event: MouseEvent) {
+    console.log((event.target as HTMLElement).closest('dropdown'));
   }
 }

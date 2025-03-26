@@ -50,6 +50,9 @@ export class DropdownListComponent implements OnDestroy, AfterViewInit {
 
     return null;
   }
+  get show() {
+    return this.service.showList();
+  }
   ngAfterViewInit(): void {
     this.tblRows = this.rows.toArray();
   }
