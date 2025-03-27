@@ -17,6 +17,12 @@ table {
 
     tr {
         border: 1px solid rgba(#fff, .1);
+        cursor: pointer;
+        transition: all .2s;
+
+        &:hover {
+            background: rgba(#fff, .07);
+        }
 
         ::ng-deep {
 

@@ -1,1 +1,9 @@
-<input class="form-input border" type="text" input-events>
+<div>
+    <input class="form-input" type="text" (render)="onRender($event)" input-events>
+    <button type="button" (click)="click()">
+        <svg viewBox="0 -960 960 960">
+            <path
+                d="M140-295v-53h296v53H140Zm0-179v-53h456v53H140Zm0-179v-53h456v53H140Zm541 513v-223l180 112-180 111Z" />
+        </svg>
+    </button>
+</div>

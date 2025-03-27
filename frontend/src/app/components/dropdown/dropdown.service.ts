@@ -10,14 +10,19 @@ export class DropdownService {
   showList = signal<boolean>(false);
 
   arrow = new EventEmitter<number>();
+  rowClick = new EventEmitter<any>();
+  btnClick = new EventEmitter();
 
   constructor() {
-    // effect(() => {
-    //   const filtered = this.filtered();
-    //   if (!filtered || filtered.length < 1) return;
+    effect(() => {
+      if (!this.showList()) return;
 
-    //   filtered.forEach(d => d.marked = d.name)
-    // });
-    // effect(() => console.log(this.filtered()))
+      const data = this.data();
+      if (!data) return;
+
+      data.forEach(d => d.marked = d.name);
+
+      this.filtered.set(data);
+    })
   }
 }

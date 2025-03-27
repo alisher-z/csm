@@ -1,15 +1,18 @@
-import { Directive, effect, ElementRef, HostListener, inject } from '@angular/core';
+import { Directive, effect, ElementRef, EventEmitter, HostListener, inject, OnDestroy, Output } from '@angular/core';
 import { DropdownService } from '../dropdown.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 
 @Directive({
   selector: '[input-events]'
 })
-export class InputDirective {
+export class InputDirective implements OnDestroy {
+  @Output() render = new EventEmitter<any>();
   el = inject(ElementRef);
   service = inject(DropdownService);
   sanitizer = inject(DomSanitizer);
 
+  subscriptions: Subscription[] = [];
   textbox!: HTMLInputElement;
   index = -1;
 
@@ -19,9 +22,28 @@ export class InputDirective {
 
   private init() {
     this.textbox = this.el.nativeElement;
+    this.subscriptions.push(
+      this.service.rowClick.subscribe((item) => {
+        this.service.item.set(item);
+        if (!this.service.item()) return;
+
+        const filtered = this.service.filtered();
+        if (!filtered) return;
+        const _item = this.service.item();
+        this.index = filtered.findIndex((d) => d.id == _item.id);
+
+        this.textbox.value = this.service.item().name;
+        this.hide();
+      }),
+      this.service.btnClick.subscribe(() => {
+        if (this.index >= 0)
+          setTimeout(() => this.service.arrow.emit(this.index), 0)
+      })
+    )
   }
 
   @HostListener('input') input() {
+    this.show();
     const filtered = this.getFiltered(this.textbox.value);
 
     if (!filtered) return;
@@ -34,6 +56,8 @@ export class InputDirective {
   @HostListener('focus')
   focus() {
     this.textbox.select();
+    if (this.index >= 0)
+      setTimeout(() => this.service.arrow.emit(this.index), 0);
     this.show();
   }
 
@@ -44,11 +68,13 @@ export class InputDirective {
 
     if (this.service.item())
       this.textbox.value = this.service.item().name;
+
+    this.render.emit(this.service.item());
   }
 
   @HostListener('keydown', ['$event'])
   keydown({ key }: KeyboardEvent) {
-    console.log(key);
+    // console.log(key);
     const filtered = this.service.filtered();
 
     if (!filtered) return;
@@ -150,5 +176,8 @@ export class InputDirective {
   }
   private hide() {
     this.service.showList.set(false);
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

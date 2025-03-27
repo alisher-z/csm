@@ -42,4 +42,8 @@ export class DropdownComponent implements AfterViewInit {
     if (!tagName)
       this.service.showList.set(false);
   }
+
+  render(item: any) {
+    console.log(item);
+  }
 }

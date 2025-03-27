@@ -34,6 +34,10 @@ export class DropdownListComponent implements OnDestroy, AfterViewInit {
     this.scroll(row);
   }
 
+  rowClick(item: any) {
+    this.service.rowClick.emit(item);
+  }
+
   getRow(index: number) {
     return this.tblRows[index].nativeElement;
   }
@@ -50,9 +54,6 @@ export class DropdownListComponent implements OnDestroy, AfterViewInit {
 
     return null;
   }
-  // get show() {
-  //   return this.service.showList();
-  // }
   ngAfterViewInit(): void {
     this.tblRows = this.rows.toArray();
   }
