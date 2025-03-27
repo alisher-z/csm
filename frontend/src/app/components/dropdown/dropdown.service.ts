@@ -9,6 +9,9 @@ export class DropdownService {
   item = signal<any | null>(null);
   showList = signal<boolean>(false);
 
+  border!: boolean;
+  value = signal<string | null>(null);
+
   arrow = new EventEmitter<number>();
   rowClick = new EventEmitter<any>();
   btnClick = new EventEmitter();
@@ -23,6 +26,6 @@ export class DropdownService {
       data.forEach(d => d.marked = d.name);
 
       this.filtered.set(data);
-    })
+    });
   }
 }

@@ -1,5 +1,5 @@
 <label></label>
-<dropdown [data]="data">
+<dropdown [data]="data" [border]="border" [value]="value" (render)="onRender($event)">
     @if(show){
     <ng-content></ng-content>
     <ng-template #dropdown let-item>

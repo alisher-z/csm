@@ -40,7 +40,29 @@ export class InputDirective implements OnDestroy {
         if (this.index >= 0)
           setTimeout(() => this.service.arrow.emit(this.index), 0)
       })
-    )
+    );
+    effect(() => {
+      const value = this.service.value();
+      if (!value) return;
+
+      const id = +value;
+
+      const item = this.service.filtered().filter((d, i) => {
+        if (d.id !== id)
+          return false;
+
+        this.index = i;
+        return true;
+      })[0];
+
+      if (item)
+        this.service.item.set(item);
+
+      if (item)
+        this.textbox.value = item.name;
+
+      this.service.value.set(null);
+    })
   }
 
   @HostListener('input') input() {
@@ -74,7 +96,8 @@ export class InputDirective implements OnDestroy {
   }
 
   @HostListener('keydown', ['$event'])
-  keydown({ key }: KeyboardEvent) {
+  keydown(event: KeyboardEvent) {
+    const { key } = event;
     // console.log(key);
     const filtered = this.service.filtered();
 
@@ -85,7 +108,7 @@ export class InputDirective implements OnDestroy {
     else if (key == 'ArrowUp')
       this.arrowUp();
     else if (key == 'Enter')
-      this.enter();
+      this.enter(event);
     else if (key === 'Escape')
       this.hide();
 
@@ -105,7 +128,8 @@ export class InputDirective implements OnDestroy {
     return this.service.data();
   }
 
-  private enter() {
+  private enter(event: KeyboardEvent) {
+    event.preventDefault();
     if (this.index < 0) return;
 
     this.textbox.value = this.service.item().name;

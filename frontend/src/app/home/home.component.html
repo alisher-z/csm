@@ -1,13 +1,17 @@
-<combobox [data]="customers">
-    <ng-template #combo let-item>
-        <td [innerHTML]="item.marked"></td>
-    </ng-template>
-</combobox>
 <p>home works!</p>
 <input type="text">
 
-<combobox [data]="customers">
-    <ng-template #combo let-item>
-        <td [innerHTML]="item.marked"></td>
-    </ng-template>
-</combobox>
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <combobox [data]="customers" (render)="getData($event)" formControlName="customer">
+        <ng-template #combo let-item>
+            <td [innerHTML]="item.marked"></td>
+        </ng-template>
+    </combobox>
+
+    <combobox [data]="products" formControlName="product">
+        <ng-template #combo let-item>
+            <td [innerHTML]="item.marked"></td>
+        </ng-template>
+    </combobox>
+    <button type="submit">submit</button>
+</form>

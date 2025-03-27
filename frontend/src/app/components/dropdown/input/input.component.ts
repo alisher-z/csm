@@ -20,4 +20,8 @@ export class DropdwonInputComponent {
   onRender(item: any) {
     this.render.emit(item);
   }
+
+  get border() {
+    return this.service.border;
+  }
 }
