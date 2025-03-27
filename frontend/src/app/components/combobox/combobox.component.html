@@ -1,0 +1,9 @@
+<label></label>
+<dropdown [data]="data">
+    @if(show){
+    <ng-content></ng-content>
+    <ng-template #dropdown let-item>
+        <ng-container *ngTemplateOutlet="combo; context:{$implicit:item}"></ng-container>
+    </ng-template>
+    }
+</dropdown>

@@ -7,12 +7,12 @@ type BlockType = 'center' | 'end' | 'nearest' | 'start';
 
 @Component({
   selector: 'dropdown-list',
-  imports: [NgTemplateOutlet, JsonPipe],
+  imports: [NgTemplateOutlet],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
 export class DropdownListComponent implements OnDestroy, AfterViewInit {
-  @ContentChild('dropdown') template: TemplateRef<any> | null = null;
+  @ContentChild('list') list: TemplateRef<any> | null = null;
   @ViewChildren('rows') rows!: QueryList<ElementRef>;
 
   subscriptions: Subscription[] = [];

@@ -33,6 +33,7 @@ export class InputDirective implements OnDestroy {
         this.index = filtered.findIndex((d) => d.id == _item.id);
 
         this.textbox.value = this.service.item().name;
+        this.textbox.focus();
         this.hide();
       }),
       this.service.btnClick.subscribe(() => {
@@ -85,6 +86,8 @@ export class InputDirective implements OnDestroy {
       this.arrowUp();
     else if (key == 'Enter')
       this.enter();
+    else if (key === 'Escape')
+      this.hide();
 
     if (this.index >= 0)
       setTimeout(() =>

@@ -2,8 +2,8 @@
 @if(show){
 <dropdown-list>
     <ng-content></ng-content>
-    <ng-template #dropdown let-item>
-        <ng-container *ngTemplateOutlet="line; context:{$implicit:item}"></ng-container>
+    <ng-template #list let-item>
+        <ng-container *ngTemplateOutlet="dropdown; context:{$implicit:item}"></ng-container>
     </ng-template>
 </dropdown-list>
 }

@@ -1,9 +1,13 @@
-<p>home works!</p>
-<dropdown [data]="customers">
-    <!-- <th>hello</th> -->
-    <ng-template #line let-item>
+<combobox [data]="customers">
+    <ng-template #combo let-item>
         <td [innerHTML]="item.marked"></td>
-        <!-- <td>{{item.name}}</td> -->
     </ng-template>
-</dropdown>
+</combobox>
+<p>home works!</p>
 <input type="text">
+
+<combobox [data]="customers">
+    <ng-template #combo let-item>
+        <td [innerHTML]="item.marked"></td>
+    </ng-template>
+</combobox>

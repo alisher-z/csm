@@ -7,12 +7,13 @@ import { NgTemplateOutlet } from '@angular/common';
 @Component({
   selector: 'dropdown',
   imports: [DropdwonInputComponent, DropdownListComponent, NgTemplateOutlet],
+  // providers: [DropdownService],
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss'
 })
 export class DropdownComponent implements AfterViewInit {
   @Input() data!: WritableSignal<any[] | undefined>;
-  @ContentChild('line') line: TemplateRef<any> | null = null;
+  @ContentChild('dropdown') dropdown: TemplateRef<any> | null = null;
 
   service = inject(DropdownService);
   el = inject(ElementRef)
@@ -37,9 +38,8 @@ export class DropdownComponent implements AfterViewInit {
     // console.log(this.el.nativeElement);
   }
   @HostListener('document:click', ['$event'])
-  onDocClick({ target }: MouseEvent) {
-    const tagName = (<HTMLElement>target).closest('dropdown')?.tagName;
-    if (!tagName)
+  onDocClick(event: MouseEvent) {
+    if (!this.el.nativeElement.contains(event.target))
       this.service.showList.set(false);
   }
 
