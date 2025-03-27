@@ -1,10 +1,16 @@
 :host {
     display: flex;
     height: auto;
-    max-height: 300px;
+    max-height: 200px;
     overflow: auto;
     position: absolute;
+    top: calc(100% + 2px);
     background-color: var(--brown);
+    z-index: 10000;
+    width: auto;
+    min-width: 100%;
+    max-width: 350px;
+    border-bottom: 1px solid rgba(#fff, .07);
 }
 
 table {
@@ -29,6 +35,10 @@ table {
             td,
             th {
                 padding: 5px 7px;
+            }
+
+            td {
+                white-space: nowrap;
             }
         }
     }

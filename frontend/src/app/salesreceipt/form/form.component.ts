@@ -12,10 +12,11 @@ import { NumberboxComponent } from "../../components/numberbox/numberbox.compone
 import { ProductService } from '../../product/product.service';
 import { TextboxComponent } from "../../components/textbox/textbox.component";
 import { Subscription } from 'rxjs';
+import { ComboboxComponent } from "../../components/combobox/combobox.component";
 
 @Component({
   selector: 'sales-receipt-form',
-  imports: [ReactiveFormsModule, MainFormComponent, MyDateComponent, MySelectComponent, RichtextComponent, NumberboxComponent, TextboxComponent],
+  imports: [ReactiveFormsModule, MainFormComponent, MyDateComponent, MySelectComponent, RichtextComponent, NumberboxComponent, TextboxComponent, ComboboxComponent],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss'
 })

@@ -30,7 +30,8 @@ export class DropdownComponent implements AfterViewInit {
       this.service.data.set(data);
       this.service.filtered.set(data);
     });
-    this.service.border = this.border();
+    effect(() => this.service.border = this.border());
+    // this.service.border = this.border();
     effect(() => {
       if (!this.value()) return;
       this.service.value.set(this.value());

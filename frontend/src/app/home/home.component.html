@@ -2,16 +2,32 @@
 <input type="text">
 
 <form [formGroup]="form" (ngSubmit)="submit()">
-    <combobox [data]="customers" (render)="getData($event)" formControlName="customer">
-        <ng-template #combo let-item>
-            <td [innerHTML]="item.marked"></td>
-        </ng-template>
-    </combobox>
+    <table>
+        <thead>
+            <tr>
+                <th>customer</th>
+                <th>product</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <combobox [data]="customers" (render)="getData($event)" formControlName="customer">
+                        <ng-template #combo let-item>
+                <td [innerHTML]="item.marked"></td>
+                </ng-template>
+                </combobox>
+                </td>
+                <td>
+                    <combobox [data]="products" formControlName="product">
+                        <ng-template #combo let-item>
+                <td [innerHTML]="item.marked"></td>
+                </ng-template>
+                </combobox>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-    <combobox [data]="products" formControlName="product">
-        <ng-template #combo let-item>
-            <td [innerHTML]="item.marked"></td>
-        </ng-template>
-    </combobox>
     <button type="submit">submit</button>
 </form>

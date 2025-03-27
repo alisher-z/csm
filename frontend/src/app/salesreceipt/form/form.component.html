@@ -7,7 +7,14 @@
                     <my-date caption="Date" formControlName="date" />
                 </div>
                 <div class="input" formGroupName="references">
-                    <my-select caption="Customer" [options]="customers" formControlName="customer" />
+                    <!-- <my-select caption="Customer" [options]="customers" formControlName="customer" /> -->
+                    <combobox caption="Customer" [data]="customers" formControlName="customer">
+                        <ng-template #combo let-item>
+                            <td [innerHTML]="item.marked"></td>
+                            <!-- <td>{{item.phone}}</td>
+                            <td>{{item.email}}</td> -->
+                        </ng-template>
+                    </combobox>
                 </div>
             </div>
             <button type="button" (click)="addFormItem()">
@@ -32,58 +39,63 @@
                         <tr [formGroupName]="$index">
                             <td class="product">
                                 <ng-container formGroupName="references">
-                                    <my-select [border]="false" formControlName="product" [options]="products" />
-                                </ng-container>
-                            </td>
-                            <td class="description">
-                                <textbox [border]="false" formControlName="description" />
-                            </td>
-                            <td class="quantity">
-                                <numberbox [border]="false" formControlName="quantity" />
-                            </td>
-                            <td class="price">
-                                <numberbox [border]="false" formControlName="price" />
-                            </td>
-                            <td class="price">
-                                <input class="form-input" type="number" formControlName="total">
-                                @if(items.controls.length>1){
-                                <button type="button" (click)="removeFormItem($index)">
-                                    <svg viewBox="0 -960 960 960">
-                                        <path
-                                            d="M595.38-260v-40h120v40h-120Zm0-320v-40h240v40h-240Zm0 160v-40h200v40h-200ZM164.62-640h-40v-40h149.23v-35.39h101.53V-680h149.24v40h-40v335.38q0 27.62-18.5 46.12Q447.62-240 420-240H229.23q-27.61 0-46.11-18.5t-18.5-46.12V-640Zm40 0v335.38q0 9.24 7.69 16.93Q220-280 229.23-280H420q9.23 0 16.92-7.69 7.7-7.69 7.7-16.93V-640h-240Zm0 0v360-360Z" />
-                                    </svg>
-                                </button>
-                                }
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                    <tbody class="tbody-space">
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Grand Total</th>
-                            <th><input class="form-input" type="number" formControlName="total"></th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </section>
-            <div class="total">
-                <div class="description">
-                    <richtext caption="Description" formControlName="description" />
-                </div>
-                <div class="grand">
-                    <div class="total-sub">
-                        <numberbox caption="Discount" formControlName="gift" />
-                    </div>
-                    <div class="total-sub">
-                        <numberbox caption="Paid" formControlName="received" />
-                    </div>
-                    <div class="total-sub">
-                        <numberbox caption="Due" formControlName="due" />
-                    </div>
-                </div>
+                                    <!-- <my-select [border]="false" formControlName="product" [options]="products" /> -->
+                                    <combobox [data]="products" [border]="false" formControlName="product">
+                                        <ng-template #combo let-item>
+                            <td [innerHTML]="item.marked"></td>
+                            </ng-template>
+                            </combobox>
+    </ng-container>
+    </td>
+    <td class="description">
+        <textbox [border]="false" formControlName="description" />
+    </td>
+    <td class="quantity">
+        <numberbox [border]="false" formControlName="quantity" />
+    </td>
+    <td class="price">
+        <numberbox [border]="false" formControlName="price" />
+    </td>
+    <td class="price">
+        <input class="form-input" type="number" formControlName="total">
+        @if(items.controls.length>1){
+        <button type="button" (click)="removeFormItem($index)">
+            <svg viewBox="0 -960 960 960">
+                <path
+                    d="M595.38-260v-40h120v40h-120Zm0-320v-40h240v40h-240Zm0 160v-40h200v40h-200ZM164.62-640h-40v-40h149.23v-35.39h101.53V-680h149.24v40h-40v335.38q0 27.62-18.5 46.12Q447.62-240 420-240H229.23q-27.61 0-46.11-18.5t-18.5-46.12V-640Zm40 0v335.38q0 9.24 7.69 16.93Q220-280 229.23-280H420q9.23 0 16.92-7.69 7.7-7.69 7.7-16.93V-640h-240Zm0 0v360-360Z" />
+            </svg>
+        </button>
+        }
+    </td>
+    </tr>
+    }
+    </tbody>
+    <tbody class="tbody-space">
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>Grand Total</th>
+            <th><input class="form-input" type="number" formControlName="total"></th>
+        </tr>
+    </tfoot>
+    </table>
+    </section>
+    <div class="total">
+        <div class="description">
+            <richtext caption="Description" formControlName="description" />
+        </div>
+        <div class="grand">
+            <div class="total-sub">
+                <numberbox caption="Discount" formControlName="gift" />
             </div>
-        </section>
+            <div class="total-sub">
+                <numberbox caption="Paid" formControlName="received" />
+            </div>
+            <div class="total-sub">
+                <numberbox caption="Due" formControlName="due" />
+            </div>
+        </div>
+    </div>
+    </section>
     </ng-container>
 </main-form>
