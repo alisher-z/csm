@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WipeDirective } from '../../../components/utils/wipe.directive';
 
@@ -9,6 +9,8 @@ import { WipeDirective } from '../../../components/utils/wipe.directive';
   styleUrl: './sale.component.scss'
 })
 export class SaleComponent extends WipeDirective {
+  @Output('change') saleChange = new EventEmitter<number>();
+
   salesForm!: FormArray;
 
   private desciption = new FormControl(null);
@@ -22,7 +24,7 @@ export class SaleComponent extends WipeDirective {
 
   }
 
-  createSale() {
+  getForm() {
     const form = new FormGroup({
       description: this.desciption,
       quantity: this.quantity,
@@ -33,21 +35,31 @@ export class SaleComponent extends WipeDirective {
       })
     });
 
-
+    this.listen(form);
+    return form;
   }
 
-  listen(sale: FormGroup) {
-    const { price, quantity } = sale.controls;
+  listen(form: FormGroup) {
+    const { price, quantity, references } = form.controls;
+    const { product } = (<FormGroup>references).controls;
 
     this.subscriptions.push(
-      price.valueChanges.subscribe(() => this.calculatePrice(sale)),
-      quantity.valueChanges.subscribe(() => this.calculatePrice(sale))
+      price.valueChanges.subscribe(() => this.calculatePrice(form)),
+      quantity.valueChanges.subscribe(() => this.calculatePrice(form)),
+      product.valueChanges.subscribe(() => this.calculatePrice(form))
     )
   }
 
-  calculatePrice(sale: FormGroup) {
-    const { quantity, price, total } = sale.controls;
+  calculatePrice(form: FormGroup) {
+    const { quantity, price, total } = form.controls;
 
-    total.setValue(+quantity * +price);
+    total.setValue(+quantity * +price, { emitEvent: false });
+    this.calculateTotalPrice();
+  }
+  calculateTotalPrice() {
+    const values = this.salesForm.getRawValue();
+    const totalPrice = values.reduce((sum, { total }) => sum + total, 0);
+
+    this.saleChange.emit(totalPrice);
   }
 }
