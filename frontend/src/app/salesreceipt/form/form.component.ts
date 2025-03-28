@@ -13,30 +13,6 @@ import { TextboxComponent } from "../../components/textbox/textbox.component";
 import { ComboboxComponent } from "../../components/combobox/combobox.component";
 import { ChangeRowsFormDirective } from './form.directive';
 
-class Sales {
-  description: string | null = null;
-  quantity: number = 1;
-  price: number = 0;
-  total: number = 0;
-  references: {
-    product: number | null
-  } = {
-      product: null
-    };
-}
-class SalesReceipt {
-  date: string = Date();
-  name: string | null = null;
-  discription: string | null = null;
-  giftn: number = 0;
-  received: number = 0;
-  total: number = 0;
-  references: {
-    customer: number | null
-  } = { customer: null };
-  items: Sales[] = [];
-}
-
 @Component({
   selector: 'sales-receipt-form',
   imports: [ReactiveFormsModule, MainFormComponent, MyDateComponent, RichtextComponent, NumberboxComponent, TextboxComponent, ComboboxComponent, ChangeRowsFormDirective],
@@ -237,15 +213,9 @@ export class SalesReceiptFormComponent extends FormDirective {
     return formatDate(Date(), 'yyyy-MM-dd', 'en');
   }
 
-  private createSale({ description, quantity, price, total, references } = new Sales()) {
-    const formGroup = this.fb.group({
-      description: [description],
-      quantity: [quantity, [Validators.required, Validators.min(1)]],
-      price: [{ value: price, disabled: true }],
-      total: [{ value: total, disabled: true }],
-      references: this.fb.group({
-        products: [references.product, Validators.required]
-      })
-    });
+  private createSale() {
+    const form = new FormGroup({
+
+    })
   }
 }
