@@ -6,29 +6,50 @@ import { MainFormComponent } from "../../components/form/form.component";
 import { MyDateComponent } from "../../components/my-date/my-date.component";
 import { formatDate } from '@angular/common';
 import { CustomerService } from '../../customer/customer.service';
-import { MySelectComponent } from "../../components/my-select/my-select.component";
 import { RichtextComponent } from "../../components/richtext/richtext.component";
 import { NumberboxComponent } from "../../components/numberbox/numberbox.component";
 import { ProductService } from '../../product/product.service';
 import { TextboxComponent } from "../../components/textbox/textbox.component";
-import { Subscription } from 'rxjs';
 import { ComboboxComponent } from "../../components/combobox/combobox.component";
+import { ChangeRowsFormDirective } from './form.directive';
+
+class Sales {
+  description: string | null = null;
+  quantity: number = 1;
+  price: number = 0;
+  total: number = 0;
+  references: {
+    product: number | null
+  } = {
+      product: null
+    };
+}
+class SalesReceipt {
+  date: string = Date();
+  name: string | null = null;
+  discription: string | null = null;
+  giftn: number = 0;
+  received: number = 0;
+  total: number = 0;
+  references: {
+    customer: number | null
+  } = { customer: null };
+  items: Sales[] = [];
+}
 
 @Component({
   selector: 'sales-receipt-form',
-  imports: [ReactiveFormsModule, MainFormComponent, MyDateComponent, MySelectComponent, RichtextComponent, NumberboxComponent, TextboxComponent, ComboboxComponent],
+  imports: [ReactiveFormsModule, MainFormComponent, MyDateComponent, RichtextComponent, NumberboxComponent, TextboxComponent, ComboboxComponent, ChangeRowsFormDirective],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss'
 })
-export class SalesReceiptFormComponent extends FormDirective implements OnDestroy {
+export class SalesReceiptFormComponent extends FormDirective {
   override service = inject(SaleReceiptService);
   customerService = inject(CustomerService);
   productService = inject(ProductService);
 
   customers: WritableSignal<any[] | undefined>;
   products: WritableSignal<any[] | undefined>;
-
-  private subscriptions: Subscription[] = [];
 
   constructor() {
     super();
@@ -216,7 +237,15 @@ export class SalesReceiptFormComponent extends FormDirective implements OnDestro
     return formatDate(Date(), 'yyyy-MM-dd', 'en');
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+  private createSale({ description, quantity, price, total, references } = new Sales()) {
+    const formGroup = this.fb.group({
+      description: [description],
+      quantity: [quantity, [Validators.required, Validators.min(1)]],
+      price: [{ value: price, disabled: true }],
+      total: [{ value: total, disabled: true }],
+      references: this.fb.group({
+        products: [references.product, Validators.required]
+      })
+    });
   }
 }

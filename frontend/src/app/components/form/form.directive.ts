@@ -1,13 +1,15 @@
-import { Directive, inject, Signal, WritableSignal } from '@angular/core';
+import { Directive, inject, OnDestroy, Signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MainService } from '../main.service';
 import { MainFormService } from './form.service';
+import { Subscription } from 'rxjs';
+import { formatDate } from '@angular/common';
 
-// @Directive({
-//   selector: '[appForm]'
-// })
-export abstract class FormDirective {
+@Directive({
+  selector: '[appForm]'
+})
+export abstract class FormDirective implements OnDestroy {
   abstract service: MainService;
   abstract getForm(): FormGroup<any>;
   abstract setForm(): void;
@@ -20,6 +22,7 @@ export abstract class FormDirective {
   id!: string | null;
   data!: WritableSignal<any | undefined>;
   loading!: Signal<boolean>;
+  subscriptions: Subscription[] = [];
 
   constructor() {
 
@@ -40,5 +43,12 @@ export abstract class FormDirective {
     this.formService.close.set(this.id ? '../..' : '../');
     this.formService.id = this.id;
     this.formService.loading = this.loading;
+  }
+  ngOnDestroy(): void {
+    if (this.subscriptions.length > 0)
+      this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+  toDate(date: Date) {
+    return formatDate(date, 'yyyy-MM-dd', 'en');
   }
 }

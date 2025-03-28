@@ -81,7 +81,7 @@ table {
     border-spacing: 0;
     display: grid;
     grid-template-columns: 220px 1fr repeat(3, fit-content(90px));
-    grid-template-rows: max-content fit-content(325px) 1fr max-content;
+    grid-template-rows: max-content 1fr max-content;
 }
 
 thead,
@@ -151,6 +151,12 @@ tbody {
     overflow: auto;
     overflow-x: hidden;
 
+    tr {
+        td:last-child {
+            padding-right: 10px;
+        }
+    }
+
     tr:hover {
         button {
             opacity: 1 !important;
@@ -159,7 +165,6 @@ tbody {
     }
 
     td.price {
-        // width: 120px;
         position: relative;
     }
 

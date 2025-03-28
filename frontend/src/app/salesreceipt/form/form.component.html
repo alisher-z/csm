@@ -34,12 +34,11 @@
                             <th>total</th>
                         </tr>
                     </thead>
-                    <tbody formArrayName="items">
+                    <tbody formArrayName="items" [zaGridRows]="items.length">
                         @for(item of items.controls; track item){
                         <tr [formGroupName]="$index">
                             <td class="product">
                                 <ng-container formGroupName="references">
-                                    <!-- <my-select [border]="false" formControlName="product" [options]="products" /> -->
                                     <combobox [data]="products" [border]="false" formControlName="product">
                                         <ng-template #combo let-item>
                             <td [innerHTML]="item.marked"></td>
@@ -69,8 +68,13 @@
     </td>
     </tr>
     }
-    </tbody>
-    <tbody class="tbody-space">
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
     </tbody>
     <tfoot>
         <tr>
