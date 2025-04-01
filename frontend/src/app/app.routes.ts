@@ -10,6 +10,8 @@ import { InventoryFormComponent } from './inventory/form/form.component';
 import { SalesReceiptComponent } from './salesreceipt/salesreceipt.component';
 import { SalesReceiptFormComponent } from './salesreceipt/form/form.component';
 import { HomeComponent } from './home/home.component';
+import { ReconciliationComponent } from './reconciliation/reconciliation.component';
+import { ReconciliationFormComponent } from './reconciliation/form/form.component';
 
 export const routes: Routes = [
     {
@@ -70,6 +72,18 @@ export const routes: Routes = [
             }, {
                 path: 'form/:id',
                 component: SalesReceiptFormComponent
+            }
+        ]
+    }, {
+        path: 'reconciliation',
+        component: ReconciliationComponent,
+        children: [
+            {
+                path: 'form',
+                component: ReconciliationFormComponent
+            }, {
+                path: 'form/:id',
+                component: ReconciliationFormComponent
             }
         ]
     },
