@@ -744,4 +744,37 @@ call pr_insert_receivable (
 )
 call pr_delete_sales_receipt (1);
 
-delete from receivables where id = 5;
+delete from receivables where id = 5;+
+
+select
+    recp_id,
+    sum(quantity * price) as price
+from sales
+group by recp_id;
+
+with total_sales_cte as(
+    select
+        recp_id,
+        sum(quantity * price) as price,
+        (select sum(amount) as received from receivables where recp_id = sales.recp_id) as received
+    from sales
+    group by recp_id
+)
+select
+    sr.id,
+    sr.date,
+    sr.name,
+    sr.description,
+    tsc.price,
+    sr.gift,
+    tsc.received,
+    (tsc.price - sr.gift - tsc.received) as due
+from sales_receipts as sr
+join total_sales_cte as tsc on tsc.recp_id = sr.id
+where (tsc.price - sr.gift - tsc.received) > 0;
+
+select * from receivables;
+select * from sales_receipts;
+select * from reconciliations;
+
+select * from fn_list_reconciliation();
