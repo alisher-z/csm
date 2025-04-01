@@ -1,1 +1,58 @@
-<p>sale works!</p>
+<button type="button" (click)="addSale()">
+    <svg viewBox="0 -960 960 960">
+        <path
+            d="M184.62-200q-27.62 0-46.12-18.5Q120-237 120-264.62v-430.76q0-27.62 18.5-46.12Q157-760 184.62-760h590.76q27.62 0 46.12 18.5Q840-723 840-695.38v183.07H160v247.69q0 9.24 7.69 16.93 7.69 7.69 16.93 7.69h343.07v40H184.62ZM160-607.69h640v-87.69q0-9.24-7.69-16.93-7.69-7.69-16.93-7.69H184.62q-9.24 0-16.93 7.69-7.69 7.69-7.69 16.93v87.69ZM780-100v-120H660v-40h120v-120h40v120h120v40H820v120h-40ZM160-240v-480 480Z" />
+    </svg>
+</button>
+<table [formGroup]="form">
+    <thead>
+        <tr>
+            <th>product</th>
+            <th>description</th>
+            <th>qty</th>
+            <th>price</th>
+            <th>total</th>
+        </tr>
+    </thead>
+    <tbody formArrayName="items" [zaGridRows]="forms.length">
+        @for(f of forms.controls; track f){
+        <tr [formGroupName]="$index">
+            <td formGroupName="references">
+                <combobox [data]="products" [border]="false" formControlName="product">
+                    <ng-template #combo let-item>
+            <td [innerHTML]="item.marked"></td>
+            </ng-template>
+            </combobox>
+            </td>
+            <td>
+                <textbox [border]="false" formControlName="description" />
+            </td>
+            <td>
+                <numberbox [border]="false" formControlName="quantity" />
+            </td>
+            <td>
+                <numberbox [border]="false" formControlName="price" />
+            </td>
+            <td>
+                <numberbox [border]="false" formControlName="total" />
+                @if(forms.controls.length>1){
+                <button type="button" (click)="removeSale($index)">
+                    <svg viewBox="0 -960 960 960">
+                        <path
+                            d="M595.38-260v-40h120v40h-120Zm0-320v-40h240v40h-240Zm0 160v-40h200v40h-200ZM164.62-640h-40v-40h149.23v-35.39h101.53V-680h149.24v40h-40v335.38q0 27.62-18.5 46.12Q447.62-240 420-240H229.23q-27.61 0-46.11-18.5t-18.5-46.12V-640Zm40 0v335.38q0 9.24 7.69 16.93Q220-280 229.23-280H420q9.23 0 16.92-7.69 7.7-7.69 7.7-16.93V-640h-240Zm0 0v360-360Z" />
+                    </svg>
+                </button>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>Price Grand Total</th>
+            <th>
+                <numberbox [border]="false" formControlName="total" />
+            </th>
+        </tr>
+    </tfoot>
+</table>

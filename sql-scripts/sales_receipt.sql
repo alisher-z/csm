@@ -54,6 +54,46 @@ create procedure pr_insert_sales_receipt(receipt jsonb) language plpgsql as $$
     end;
 $$;
 
+drop procedure pr_update_sales_receipt;
+create procedure pr_update_sales_receipt(receipt jsonb) language plpgsql as $$
+     declare
+          receipt_id int;
+          reconciliation_id int;
+
+     begin
+          receipt_id = (receipt->>'id')::int;
+          select recn_id 
+          into reconciliation_id
+          from receivables 
+          where recp_id = receipt_id and is_receipt = 1;
+
+          update sales_receipts set
+          cust_id = (receipt->'references'->>'customer')::int,
+          date = (receipt->>'date')::date,
+          name = nullif(trim(receipt->>'name'),''),
+          description = nullif(trim(receipt->>'description'),''),
+          gift = coalesce(nullif(trim(receipt->>'gift'),''),'0')::float
+          where id = receipt_id;
+
+          call pr_update_sale(receipt);
+
+          update reconciliations set
+          date = (receipt->>'date')::date,
+          description = nullif(trim(receipt->>'description'),'')
+          where id = reconciliation_id;
+
+          update receivables set amount = coalesce(nullif(trim(receipt->>'received'),''),'0')::float
+          where recp_id = receipt_id and recn_id = reconciliation_id;
+     end;
+$$;
+
+drop procedure pr_delete_sales_receipt;
+create procedure pr_delete_sales_receipt(_id int) language plpgsql as $$
+     begin
+          delete from sales_receipts where id = _id;
+     end;
+$$;
+
 drop function fn_list_sales_receipt;
 
 create function fn_list_sales_receipt()
@@ -72,250 +112,80 @@ returns
 table( 
      id int,
      date date,
+     name varchar,
      description text,
-     customer jsonb,
      amounts jsonb,
+     customer jsonb,
      sales jsonb 
      ) language plpgsql as $$
      begin
           return query
-          select
+               with sales_cte as(
+               select 
+                    s.id,
+                    s.recp_id,
+                    s.description,
+                    s.quantity,
+                    s.price,
+                    (s.quantity * s.price) as total_price,
+                    p.id as product_id,
+                    p.name as product_name
+               from sales as s
+               join products as p on s.prod_id = p.id
+               ),
+               sum_sales_cte as(
+               select
+                    sc.recp_id as receipt_id,
+                    sum(total_price) as grand_total,
+                    (select sr.gift from sales_receipts as sr where sr.id = sc.recp_id) as gift,
+                    (select r.amount from receivables as r where r.recp_id = sc.recp_id and is_receipt = 1) as received
+               from sales_cte as sc
+               group by receipt_id
+               ),
+               sales_balance_cte as(
+               select
+                    ssc.receipt_id,
+                    ssc.grand_total,
+                    ssc.gift,
+                    ssc.received,
+                    (ssc.grand_total - ssc.gift - ssc.received) as due
+               from sum_sales_cte as ssc
+               )
+               select
                sr.id,
                sr.date,
+               sr.name,
                sr.description,
                jsonb_build_object(
-                    'id',c.id,
-                    'name',c.name
-               ) as customer,
-               jsonb_build_object(
-                    'gift',sr.gift,
-                    'received',r.amount
+                    'total', sbc.grand_total,
+                    'gift', sbc.gift,
+                    'received', sbc.received,
+                    'due', sbc.due
                ) as amounts,
+               jsonb_build_object(
+                    'id', c.id,
+                    'name', c.name
+               ) as customer,
                jsonb_agg(
                     jsonb_build_object(
-                         'id',s.id,
-                         'description',s.description,
-                         'quantity', s.quantity,
-                         'price', s.price,
+                         'id', sc.id,
+                         'description', sc.description,
+                         'amounts', jsonb_build_object(
+                              'quantity', sc.quantity,
+                              'price', sc.price,
+                              'total', sc.total_price
+                         ),
                          'product', jsonb_build_object(
-                              'id',p.id,
-                              'name',p.name
+                              'id', sc.product_id,
+                              'name', sc.product_name
                          )
                     )
                ) as sales
-          from sales_receipts as sr
-          join customers as c on c.id = sr.cust_id
-          join receivables as r on r.recn_id = sr.id
-          join sales as s on s.recp_id = sr.id
-          join products as p on p.id = s.prod_id
-          where sr.id = _id
-          group by sr.id, sr.date, sr.description, c.id, c.name, sr.gift, r.amount;
+               from sales_receipts as sr
+               join sales_cte as sc on sc.recp_id = sr.id
+               join sales_balance_cte as sbc on sbc.receipt_id = sr.id
+               join customers as c on c.id = sr.cust_id
+               where sr.id = _id
+               group by sr.id, sr.date, sr.name, sr.description, sbc.grand_total, sbc.gift, sbc.received, sbc.due, c.id, c.name;
      end;
 $$;
-
--- create function fn_list_sales_receipt()
--- returns table( id int, customer varchar, sales jsonb )
--- language plpgsql as $$
---      begin
---           return query
---           select
---                sr.id,
---                c.name,
---                jsonb_agg(
---                     jsonb_build_object(
---                          'id',s.id,
---                          'description', s.description,
---                          'quantity', s.quantity,
---                          'prices', jsonb_build_object(
---                          'otherPrice', s.other_price,
---                          'purchase', p.purchase,
---                          'sale', p.sale
---                          ),
---                          'product', jsonb_build_object(
---                               'id', pr.id,
---                               'name', pr.name
---                          ),
---                          'inv_id', s.inv_id
---                     )
---                ) as sales
---           from sales_receipts as sr
---           join sales as s on s.recp_id = sr.id
---           join customers as c on c.id = sr.cust_id
---           join prices as p on p.inv_id = s.inv_id and p.prod_id = s.prod_id
---           join products as pr on pr.id = s.prod_id
---           group by sr.id, c.name;
---      end;
--- $$;
-
-create procedure pr_update_sales_receipt(receipt jsonb) language plpgsql as $$
-     begin
-          update sales_receipts set
-          cust_id = (receipt->'references'->>'customer')::int,
-          date = (receipt->>'date')::date,
-          name = nullif(trim(receipt->>'name'),''),
-          description = nullif(trim(receipt->>'description'),''),
-          gift = coalesce(nullif(trim(receipt->>'gift'),''),'0')::float
-          where id = (receipt->>'id')::int;
-
-          call pr_update_sale(receipt);
-
-
-     end;
-$$;
-
-drop procedure pr_update_sales_receipt;
-
-drop procedure pr_delete_sales_receipt;
-
-drop function fn_list_sales_receipt;
-
-create procedure pr_update_sales_receipt(receipt jsonb)language plpgsql as $$
-    declare
-        _id int;
-        _cust_id int;
-        updated_receipt jsonb;
-
-    begin
-        _id := (receipt->>'id')::int;
-        _cust_id := (receipt->'references'->>'customer')::int;
-
-        update sales_receipts
-        set cust_id = _cust_id
-        where id = _id;
-
-        updated_receipt := jsonb_set(receipt, '{references, receipt}', to_jsonb(_id), true);
-
-        call pr_update_sale(updated_receipt);
-        call pr_update_receivable(updated_receipt);
-    end;
-$$;
-
-create procedure pr_delete_sales_receipt(_id int) language plpgsql as $$
-     begin
-          delete from sales_receipts where id = _id;
-     end;
-$$;
-
-select * from fn_list_sales_receipt ();
-
-select *
-from
-    sales_receipts as sr
-    join sales as s on s.recp_id = sr.id
-    join customers as c on c.id = sr.cust_id
-    join prices as p on p.inv_id = s.inv_id
-    and p.prod_id = s.prod_id
-    join products as pr on pr.id = s.prod_id;
-
-call pr_insert_sales_receipt (
-    '{
-     "date": "2025-03-20",
-     "received": 200,
-     "description": "my description",
-     "references": {
-          "customer": 2
-     },
-     "items": [
-          {
-               "description": "item1 description",
-               "quantity": 3,
-               "otherPrice": 0,
-               "references": {
-                    "inventory": 1,
-                    "product": 1
-               }
-          },
-          {
-               "description": "item2 description",
-               "quantity": 4,
-               "otherPrice": 5,
-               "references": {
-                    "inventory": 1,
-                    "product": 1
-               }
-          }
-     ]
-}'
-);
-
-call pr_insert_sales_receipt (
-    '{
-     "date": "2025-03-21",
-     "received": 0,
-     "description": "my description 2",
-     "references": {
-          "customer": 2
-     },
-     "items": [
-          {
-               "description": "item1 description 2",
-               "quantity": 5,
-               "otherPrice": 0,
-               "references": {
-                    "inventory": 1,
-                    "product": 1
-               }
-          },
-          {
-               "description": "item2 description 2",
-               "quantity": 4,
-               "otherPrice": 5,
-               "references": {
-                    "inventory": 1,
-                    "product": 1
-               }
-          }
-     ]
-}'
-);
-
-call pr_update_sales_receipt (
-    '{
-     "id": 1,
-     "date": "2025-03-21",
-     "received": 200,
-     "description": "my description",
-     "references": {
-          "customer": 2
-     },
-     "items": [
-          {
-                "id":1,
-               "description": "item1 description",
-               "quantity": 5,
-               "otherPrice": 0,
-               "references": {
-                    "inventory": 1,
-                    "product": 1
-               }
-          },
-          {
-                "id":2,
-               "description": "item2 description",
-               "quantity": 7,
-               "otherPrice": 5,
-               "references": {
-                    "inventory": 1,
-                    "product": 1
-               }
-          }
-     ]
-}'
-);
-
-select * from sales_receipts;
-
-select * from receivables;
-
-select * from sales;
-
-call pr_insert_receivable (
-    '{
-     "date": "2025-03-22",
-     "received": 250,
-     "description": "my description1"  
-}'
-)
-call pr_delete_sales_receipt (1);
-
-delete from receivables where id = 5;

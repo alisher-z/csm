@@ -1,0 +1,144 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 450px;
+    width: 1024px;
+    overflow: hidden;
+
+    &>button {
+        align-self: flex-start;
+
+        svg {
+            height: 35px;
+            width: 35px;
+        }
+
+        &:hover {
+            svg {
+                fill: #00ff00;
+            }
+        }
+    }
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+table {
+    height: 100%;
+    border-spacing: 0;
+
+    display: grid;
+    grid-template-columns: 220px 1fr repeat(3, fit-content(90px));
+    grid-template-rows: max-content 1fr max-content;
+
+    thead,
+    tbody,
+    tfoot,
+    tr {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1/-1;
+    }
+
+    thead,
+    tfoot {
+        position: sticky;
+        background-color: var(--brown);
+    }
+}
+
+thead {
+    top: 0;
+    box-shadow: 0px 2px 3px rgba(black, .7);
+
+    th {
+        text-align: left;
+        padding: 10px;
+        padding-bottom: 13px;
+        border-bottom: none;
+    }
+}
+
+tbody {
+    overflow: auto;
+    overflow-x: hidden;
+
+    tr {
+        td {
+            &:last-child {
+                padding-right: 10px;
+                position: relative;
+            }
+        }
+
+        &:hover {
+            button {
+                opacity: 1 !important;
+                scale: 1 !important;
+            }
+        }
+    }
+
+    button {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        translate: 0 -50%;
+        opacity: 0;
+        scale: 1 0;
+
+        &:hover {
+            svg {
+                fill: #ff4646;
+            }
+        }
+    }
+}
+
+
+tfoot {
+    bottom: 0;
+    box-shadow: 0px -2px 3px rgba(black, .7);
+
+    th {
+        padding: 3px 7px;
+        border-top: none;
+
+        &:first-child {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            grid-column: 1/5;
+        }
+    }
+}
+
+tr:has(.ng-touched.ng-invalid) {
+    border: 1px solid red;
+}
+
+th {
+    border: 1px solid rgba(#fff, .1);
+    border-left: none;
+    font-weight: 500;
+    text-transform: uppercase;
+
+    &:first-child {
+        border-left: 1px solid rgba(#fff, .1);
+    }
+}
+
+td {
+    border: 1px solid rgba(#fff, .1);
+    border-top: none;
+    border-left: none;
+
+    &:first-child {
+        border-left: 1px solid rgba(#fff, .1);
+    }
+}

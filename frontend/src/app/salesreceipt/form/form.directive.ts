@@ -17,10 +17,4 @@ export class ChangeRowsFormDirective implements OnChanges {
 
     this.renderer.setStyle(this.el.nativeElement, 'grid-template-rows', template);
   }
-  @HostListener('scroll') scroll() {
-    const tbody: HTMLTableSectionElement = this.el.nativeElement;
-    if (tbody.scrollHeight > tbody.clientHeight) {
-      console.log('appeared');
-    }
-  }
 }

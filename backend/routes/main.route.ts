@@ -41,6 +41,7 @@ router
 
     .use(async (req, res) => {
         const { status, error, success }: DBResult = await (<any>req).result;
+        console.log(success);
 
         res.status(status);
         res.send(error ?? success);

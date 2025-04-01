@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, ContentChild, EventEmitter, inject, Input, Output, resource, TemplateRef, WritableSignal } from '@angular/core';
+import { Component, ContentChild, effect, EventEmitter, inject, Input, OnInit, Output, resource, TemplateRef, WritableSignal } from '@angular/core';
 import { GridviewService } from './gridview.service';
 import { MainService } from '../main.service';
 import { Router } from '@angular/router';
@@ -10,11 +10,11 @@ import { Router } from '@angular/router';
   templateUrl: './gridview.component.html',
   styleUrl: './gridview.component.scss'
 })
-export class GridviewComponent {
+export class GridviewComponent implements OnInit {
   router = inject(Router);
   service = inject(GridviewService);
-  clientService: MainService;
-  data: WritableSignal<any[] | undefined>;
+  clientService!: MainService;
+  data!: WritableSignal<any[] | undefined>;
 
 
   @Output('edit') _edit = new EventEmitter<number>();
@@ -22,6 +22,10 @@ export class GridviewComponent {
   @ContentChild('row') row: TemplateRef<any> | null = null;
 
   constructor() {
+    // effect(() => console.log(this.data()))
+  }
+
+  ngOnInit(): void {
     this.data = this.service.data;
     this.clientService = this.service.service;
   }

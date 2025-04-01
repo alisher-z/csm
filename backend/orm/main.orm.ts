@@ -30,8 +30,8 @@ export abstract class DBQuery {
             : `${fn}()`;
 
         const { rows } = await db.query(qrySt);
-
-        if (rows.length === 1)
+        console.log(fn.includes('fn_list'));
+        if (rows.length === 1 && fn.includes('fn_one'))
             return rows[0]
 
         return rows;

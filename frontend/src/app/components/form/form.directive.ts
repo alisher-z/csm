@@ -48,7 +48,7 @@ export abstract class FormDirective implements OnDestroy {
     if (this.subscriptions.length > 0)
       this.subscriptions.forEach(sub => sub.unsubscribe());
   }
-  toDate(date: Date) {
+  toDate(date: string) {
     return formatDate(date, 'yyyy-MM-dd', 'en');
   }
 }

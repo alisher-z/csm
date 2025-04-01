@@ -511,3 +511,237 @@ values
 ('Tuba Erdem','579 890 12 34','tuba.erdem@example.com','Cayyolu 2929 Sk. No: 52, Cankaya, Ankara'),
 ('Volkan Sonmez','580 901 23 45','volkan.sonmez@example.com','Kalamis Mah. 3030 Sk. No: 54, Kadikoy, Istanbul'),
 ('Naber Ozer','581 012 34 56','naber.ozer@example.com','Balova 3131 Sk. No: 56, Balova, Izmir');
+
+select * from receivables;
+select * from sales;
+select recn_id from receivables where recp_id = 2 and is_receipt = 1;
+select * from sales_receipts;
+
+call pr_update_sales_receipt (
+    '{
+    "references": {
+        "customer": 1
+    },
+    "id":1,
+    "date": "2025-03-23",
+    "name": "Sales Receipt #005",
+    "description": "Sales for June",
+    "gift": "200",
+    "received": "1001",
+    "items": [
+        {
+            "id":1,
+            "description": "Product AB",
+            "quantity": "3",
+            "price": "110",
+            "references": {
+                "product": 1
+            }
+        },
+        {   
+            "id":2,
+            "description": "Product BA",
+            "quantity": "4",
+            "price": "130",
+            "references": {
+                "product": 1
+            }
+        },
+        {   
+            "id":null,
+            "description": "Product Zabiullah",
+            "quantity": "6",
+            "price": "120",
+            "references": {
+                "product": 1
+            }
+        }
+    ]
+}'
+);
+
+with sales_cte as(
+    select 
+        s.id,
+        s.recp_id,
+        s.description,
+        s.quantity,
+        s.price,
+        (s.quantity * s.price) as total_price,
+        p.id as product_id,
+        p.name as product_name
+    from sales as s
+    join products as p on s.prod_id = p.id
+),
+sum_sales_cte as(
+    select
+        sc.recp_id as receipt_id,
+        sum(total_price) as grand_total,
+        (select sr.gift from sales_receipts as sr where sr.id = sc.recp_id) as gift,
+        (select r.amount from receivables as r where r.recp_id = sc.recp_id and is_receipt = 1) as received
+    from sales_cte as sc
+    group by receipt_id
+),
+sales_balance_cte as(
+    select
+        ssc.receipt_id,
+        ssc.grand_total,
+        ssc.gift,
+        ssc.received,
+        (ssc.grand_total - ssc.gift - ssc.received) as due
+    from sum_sales_cte as ssc
+)
+select
+    sr.id,
+    sr.date,
+    sr.name,
+    sr.description,
+    jsonb_build_object(
+        'total', sbc.grand_total,
+        'gift', sbc.gift,
+        'received', sbc.received,
+        'due', sbc.due
+    ) as amounts,
+    jsonb_build_object(
+        'id', c.id,
+        'name', c.name
+    ) as customer,
+    jsonb_agg(
+        jsonb_build_object(
+            'id', sc.id,
+            'description', sc.description,
+            'amounts', jsonb_build_object(
+                'quantity', sc.quantity,
+                'price', sc.price,
+                'total', sc.total_price
+            ),
+            'product', jsonb_build_object(
+                'id', sc.product_id,
+                'name', sc.product_name
+            )
+        )
+    )
+from sales_receipts as sr
+join sales_cte as sc on sc.recp_id = sr.id
+join sales_balance_cte as sbc on sbc.receipt_id = sr.id
+join customers as c on c.id = sr.cust_id
+where sr.id = 3
+group by sr.id, sr.date, sr.name, sr.description, sbc.grand_total, sbc.gift, sbc.received, sbc.due, c.id, c.name;
+
+select * from fn_one_sales_receipt(3);
+
+select * from products;
+
+
+call pr_insert_sales_receipt (
+    '{
+     "date": "2025-03-20",
+     "received": 200,
+     "description": "my description",
+     "references": {
+          "customer": 2
+     },
+     "items": [
+          {
+               "description": "item1 description",
+               "quantity": 3,
+               "otherPrice": 0,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          },
+          {
+               "description": "item2 description",
+               "quantity": 4,
+               "otherPrice": 5,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          }
+     ]
+}'
+);
+
+call pr_insert_sales_receipt (
+    '{
+     "date": "2025-03-21",
+     "received": 0,
+     "description": "my description 2",
+     "references": {
+          "customer": 2
+     },
+     "items": [
+          {
+               "description": "item1 description 2",
+               "quantity": 5,
+               "otherPrice": 0,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          },
+          {
+               "description": "item2 description 2",
+               "quantity": 4,
+               "otherPrice": 5,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          }
+     ]
+}'
+);
+
+call pr_update_sales_receipt (
+    '{
+     "id": 1,
+     "date": "2025-03-21",
+     "received": 200,
+     "description": "my description",
+     "references": {
+          "customer": 2
+     },
+     "items": [
+          {
+                "id":1,
+               "description": "item1 description",
+               "quantity": 5,
+               "otherPrice": 0,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          },
+          {
+                "id":2,
+               "description": "item2 description",
+               "quantity": 7,
+               "otherPrice": 5,
+               "references": {
+                    "inventory": 1,
+                    "product": 1
+               }
+          }
+     ]
+}'
+);
+
+select * from sales_receipts;
+
+select * from receivables;
+
+select * from sales;
+
+call pr_insert_receivable (
+    '{
+     "date": "2025-03-22",
+     "received": 250,
+     "description": "my description1"  
+}'
+)
+call pr_delete_sales_receipt (1);
+
+delete from receivables where id = 5;
