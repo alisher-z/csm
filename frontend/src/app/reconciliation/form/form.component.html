@@ -1,14 +1,21 @@
 <main-form [formGroup]="form">
     <ng-container header>Reconciliation</ng-container>
-    <ng-container body>
-        <section class="body">
-            <my-date caption="Date" formControlName="date" />
+    <section body class="body">
+        <div class="description">
             <richtext caption="Description" formControlName="description" />
+        </div>
+        <div class="date">
+            <my-date caption="Date" formControlName="date" />
+        </div>
+        <div class="customer">
             <combobox caption="Customer" [data]="customers" formControlName="customer">
                 <ng-template #combo let-item>
                     <td [innerHTML]="item.marked"></td>
                 </ng-template>
             </combobox>
+        </div>
+        <section class="sub-form">
+            <form-receivable [form]="form" (select)="select()" />
         </section>
-    </ng-container>
+    </section>
 </main-form>

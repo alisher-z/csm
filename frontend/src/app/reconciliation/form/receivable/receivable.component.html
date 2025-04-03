@@ -1,1 +1,34 @@
-<p>receivable works!</p>
+<table [formGroup]="form">
+    <thead>
+        <tr>
+            <td>
+                <input type="checkbox" formControlName="includeAll">
+            </td>
+            <th>Date</th>
+            <th>Payable</th>
+            <th>Paid</th>
+            <th>Due</th>
+        </tr>
+    </thead>
+    <tbody formArrayName="receivables">
+        @for(r of receivables.controls; track r){
+        <tr [formGroupName]="$index">
+            <td>
+                <input type="checkbox" formControlName="include">
+            </td>
+            <td>
+                <textbox [border]="false" formControlName="date" />
+            </td>
+            <td>
+                <textbox [border]="false" formControlName="due" />
+            </td>
+            <td>
+                <textbox [border]="false" formControlName="received" />
+            </td>
+            <td>
+                <textbox [border]="false" formControlName="balance" />
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

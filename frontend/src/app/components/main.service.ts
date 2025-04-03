@@ -14,7 +14,7 @@ export abstract class MainService {
   id = signal<number>(-1)
   listReferesh = signal<string>('', { equal: () => false });
 
-  private get fullUrl() {
+  get fullUrl() {
     return `${this.url}/${this.path}`;
   }
 

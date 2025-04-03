@@ -32,7 +32,7 @@ $$;
 create procedure pr_insert_reconciliation();
 
 drop function fn_list_uncleared_reconciliation;
-create function fn_list_uncleared_reconciliation(_cust_id int default null)
+create function fn_list_uncleared_reconciliation(search jsonb default null)
 returns table(
     id int,
     date date,
@@ -40,7 +40,14 @@ returns table(
     description text,
     amounts jsonb
 ) language plpgsql as $$
+    declare
+        _cust_id int;
+
     begin
+        if search is not null then
+            _cust_id := (search->>'customer')::int;
+        end if;
+
         return query
             with total_sales_cte as(
                 select
@@ -64,6 +71,6 @@ returns table(
             from sales_receipts as sr
             join total_sales_cte as tsc on tsc.recp_id = sr.id
             where (tsc.price - sr.gift - tsc.received) > 0 
-                and (_cust_id is null or sr.cust_id = _cust_id);
+                and (search is null or _cust_id = -1 or sr.cust_id = _cust_id);
     end;
 $$;

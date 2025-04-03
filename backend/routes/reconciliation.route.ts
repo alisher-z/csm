@@ -10,7 +10,7 @@ router
     })
     .get('/uncleared', async (req, res) => {
         const model = (<any>req).model as Reconciliation;
-        const { status, error, success } = await model.uncleared();
+        const { status, error, success } = await model.uncleared(req.query);
 
         res.status(status)
         res.send(error ?? success);

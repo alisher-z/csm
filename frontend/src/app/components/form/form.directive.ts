@@ -5,11 +5,12 @@ import { MainService } from '../main.service';
 import { MainFormService } from './form.service';
 import { Subscription } from 'rxjs';
 import { formatDate } from '@angular/common';
+import { WipeDirective } from '../utils/wipe.directive';
 
 @Directive({
   selector: '[appForm]'
 })
-export abstract class FormDirective implements OnDestroy {
+export abstract class FormDirective extends WipeDirective implements OnDestroy {
   abstract service: MainService;
   abstract getForm(): FormGroup<any>;
   abstract setForm(): void;
@@ -22,11 +23,6 @@ export abstract class FormDirective implements OnDestroy {
   id!: string | null;
   data!: WritableSignal<any | undefined>;
   loading!: Signal<boolean>;
-  subscriptions: Subscription[] = [];
-
-  constructor() {
-
-  }
 
   init() {
     this.id = this.route.snapshot.paramMap.get('id');
@@ -44,10 +40,7 @@ export abstract class FormDirective implements OnDestroy {
     this.formService.id = this.id;
     this.formService.loading = this.loading;
   }
-  ngOnDestroy(): void {
-    if (this.subscriptions.length > 0)
-      this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
+
   toDate(date: string) {
     return formatDate(date, 'yyyy-MM-dd', 'en');
   }
