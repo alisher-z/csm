@@ -55,7 +55,14 @@ export class ReconciliationFormComponent extends FormDirective implements OnInit
       .valueChanges
       .subscribe((id) => this.setCustomer(id));
 
-    this.subscriptions.push(customer);
+    const includeAll = form.get('includeAll')!
+      .valueChanges
+      .subscribe((v) => this.selectAll(v));
+
+    this.subscriptions.push(
+      customer,
+      includeAll
+    );
   }
   async select() {
     await delay();
@@ -63,10 +70,18 @@ export class ReconciliationFormComponent extends FormDirective implements OnInit
     const values: any[] = this.receivables.value;
     const { includeAll } = this.form.controls;
 
-    includeAll.setValue(values.every(c => c.include));
+    includeAll.setValue(values.every(c => c.include), { emitEvent: false });
   }
+
   setCustomer(id: number | null) {
     this.service.customer.set(id ?? -1);
+  }
+  selectAll(v: boolean) {
+    const controls = (<FormGroup[]>this.receivables.controls);
+    controls.forEach(c => {
+      const { include } = c.controls;
+      include.setValue(v, { emitEvent: false });
+    });
   }
 
   get receivables() {
