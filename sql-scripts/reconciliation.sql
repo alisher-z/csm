@@ -29,5 +29,41 @@ language plpgsql as $$
     end;
 $$;
 
-create procedure pr_insert_reconciliation()
+create procedure pr_insert_reconciliation();
 
+drop function fn_list_uncleared_reconciliation;
+create function fn_list_uncleared_reconciliation(_cust_id int default null)
+returns table(
+    id int,
+    date date,
+    name varchar,
+    description text,
+    amounts jsonb
+) language plpgsql as $$
+    begin
+        return query
+            with total_sales_cte as(
+                select
+                    recp_id,
+                    sum(quantity * price) as price,
+                    (select sum(amount) as received from receivables where recp_id = sales.recp_id) as received
+                from sales
+                group by recp_id
+            )
+            select
+                sr.id,
+                sr.date,
+                sr.name,
+                sr.description,
+                jsonb_build_object(
+                    'total', tsc.price,
+                    'gift', sr.gift,
+                    'received', tsc.received,
+                    'due', (tsc.price - sr.gift - tsc.received)
+                ) as amounts
+            from sales_receipts as sr
+            join total_sales_cte as tsc on tsc.recp_id = sr.id
+            where (tsc.price - sr.gift - tsc.received) > 0 
+                and (_cust_id is null or sr.cust_id = _cust_id);
+    end;
+$$;

@@ -1,2 +1,11 @@
 <router-outlet />
-<p>reconciliation works!</p>
+<gridview>
+    <ng-container>
+        <th>ID</th>
+        <th>Date</th>
+    </ng-container>
+    <ng-template #row let-item>
+        <td>{{item.id}}</td>
+        <td>{{item.date | date}}</td>
+    </ng-template>
+</gridview>

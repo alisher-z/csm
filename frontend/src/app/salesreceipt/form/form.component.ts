@@ -1,17 +1,13 @@
-import { Component, effect, inject, OnDestroy, signal, WritableSignal } from '@angular/core';
+import { Component, effect, inject, signal, WritableSignal } from '@angular/core';
 import { FormDirective } from '../../components/form/form.directive';
 import { SaleReceiptService } from '../salereceipt.service';
-import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MainFormComponent } from "../../components/form/form.component";
 import { MyDateComponent } from "../../components/my-date/my-date.component";
-import { formatDate } from '@angular/common';
 import { CustomerService } from '../../customer/customer.service';
 import { RichtextComponent } from "../../components/richtext/richtext.component";
 import { NumberboxComponent } from "../../components/numberbox/numberbox.component";
-import { ProductService } from '../../product/product.service';
-import { TextboxComponent } from "../../components/textbox/textbox.component";
 import { ComboboxComponent } from "../../components/combobox/combobox.component";
-import { ChangeRowsFormDirective } from './form.directive';
 import { SaleFormComponent } from "./sale/sale.component";
 
 @Component({
