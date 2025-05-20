@@ -1,5 +1,5 @@
 import { Component, effect, inject, OnInit, WritableSignal } from '@angular/core';
-import { FormArray, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormDirective } from '../../components/form/form.directive';
 import { MainService } from '../../components/main.service';
 import { ReconciliationService } from '../reconciliation.service';
@@ -39,6 +39,10 @@ export class ReconciliationFormComponent extends FormDirective implements OnInit
       date: [this.toDate(Date()), Validators.required],
       description: [],
       customer: [],
+      total: this.fb.group({
+        due: [{ value: 0, disabled: true }],
+        received: [0, [Validators.required, Validators.min(1)]]
+      }),
       receivables: this.fb.array([])
     });
 
@@ -59,11 +63,17 @@ export class ReconciliationFormComponent extends FormDirective implements OnInit
       .valueChanges
       .subscribe((v) => this.selectAll(v));
 
+    const received = form.get('total')!.get('received')!
+      .valueChanges
+      .subscribe((v) => this.setReceivedAmount(v));
+
     this.subscriptions.push(
       customer,
-      includeAll
+      includeAll,
+      received
     );
   }
+
   async select() {
     await delay();
 
@@ -71,6 +81,72 @@ export class ReconciliationFormComponent extends FormDirective implements OnInit
     const { includeAll } = this.form.controls;
 
     includeAll.setValue(values.every(c => c.include), { emitEvent: false });
+    this.setReceivable();
+    this.setTotal();
+  }
+
+  setTotal() {
+    const values: any[] = this.receivables.getRawValue();
+    const { received } = this.total.controls;
+
+    const sum = values.reduce((sum, { include, received }) => include ? sum + +received : sum, 0);
+
+    received.setValue(sum, { emitEvent: false });
+  }
+
+  setReceivable() {
+    const controls = this.receivables.controls as FormGroup[];
+
+    controls.forEach(c => {
+      const { include, due, received } = c.controls;
+      if (include.value)
+        received.setValue(due.value, { emitEvent: false });
+    })
+  }
+  setReceivedAmount(v: number) {
+    // console.log('hello zabiullah');
+    let value = +v;
+    const check: FormGroup[] = [];
+    const controls = this.receivables.controls as FormGroup[];
+
+    controls.forEach(c => {
+      const { include } = c.controls;
+      if (include.value)
+        check.push(c)
+    });
+
+    if (check.length > 0)
+      check.forEach(c => {
+        const { include, due, received } = c.controls;
+        if (value < 1) {
+          include.setValue(false, { emitEvent: false })
+        }
+        else if (value <= +due.value) {
+          received.setValue(value, { emitEvent: false });
+          value = 0;
+        }
+        else if (value > +due.value) {
+          received.setValue(due.value, { emitEvent: false });
+          value -= +received.value;
+        }
+      });
+    else
+      controls.forEach(c => {
+        const { include, due, received } = c.controls;
+        if (value < 1) {
+          include.setValue(false, { emitEvent: false })
+        }
+        else if (value <= +due.value) {
+          received.setValue(value, { emitEvent: false });
+          include.setValue(true, { emitEvent: false });
+          value = 0;
+        }
+        else if (value > +due.value) {
+          received.setValue(due.value, { emitEvent: false });
+          include.setValue(true, { emitEvent: false });
+          value -= +received.value;
+        }
+      })
   }
 
   setCustomer(id: number | null) {
@@ -82,9 +158,14 @@ export class ReconciliationFormComponent extends FormDirective implements OnInit
       const { include } = c.controls;
       include.setValue(v, { emitEvent: false });
     });
+    this.setReceivable();
+    this.setTotal();
   }
 
   get receivables() {
     return this.form.get('receivables') as FormArray;
+  }
+  get total() {
+    return this.form.get('total') as FormGroup;
   }
 }

@@ -5,12 +5,11 @@
                 <input type="checkbox" formControlName="includeAll">
             </td>
             <th>Date</th>
-            <th>Payable</th>
-            <th>Paid</th>
             <th>Due</th>
+            <th>Paid</th>
         </tr>
     </thead>
-    <tbody formArrayName="receivables">
+    <tbody formArrayName="receivables" [zaGridRows]="receivables.length">
         @for(r of receivables.controls; track r){
         <tr [formGroupName]="$index">
             <td>
@@ -20,15 +19,23 @@
                 <textbox [border]="false" formControlName="date" />
             </td>
             <td>
-                <textbox [border]="false" formControlName="due" />
+                <numberbox [border]="false" formControlName="due" />
             </td>
             <td>
-                <textbox [border]="false" formControlName="received" />
-            </td>
-            <td>
-                <textbox [border]="false" formControlName="balance" />
+                <numberbox [border]="false" formControlName="received" />
             </td>
         </tr>
         }
     </tbody>
+    <tfoot>
+        <tr formGroupName="total">
+            <th>total</th>
+            <th>
+                <numberbox [border]="false" formControlName="due" />
+            </th>
+            <th>
+                <numberbox [border]="false" formControlName="received" />
+            </th>
+        </tr>
+    </tfoot>
 </table>
