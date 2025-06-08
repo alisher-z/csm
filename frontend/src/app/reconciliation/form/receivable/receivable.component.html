@@ -2,7 +2,8 @@
     <thead>
         <tr>
             <td>
-                <input type="checkbox" formControlName="includeAll">
+                <checkbox (changes)="selectAll($event)" formControlName="includeAll"
+                    [indeterminate]="indeterminate()" />
             </td>
             <th>Date</th>
             <th>Due</th>
@@ -13,7 +14,7 @@
         @for(r of receivables.controls; track r){
         <tr [formGroupName]="$index">
             <td>
-                <input type="checkbox" formControlName="include">
+                <checkbox (changes)="select(r)" formControlName="include" [indeterminate]="indeterminates[$index]" />
             </td>
             <td>
                 <textbox [border]="false" formControlName="date" />
@@ -27,14 +28,15 @@
         </tr>
         }
     </tbody>
-    <tfoot>
+    <tfoot [reconciliationTFoot]="form">
+        <!-- <reconciliation-total [form]="form" /> -->
         <tr formGroupName="total">
             <th>total</th>
             <th>
                 <numberbox [border]="false" formControlName="due" />
             </th>
             <th>
-                <numberbox [border]="false" formControlName="received" />
+                <numberbox #received [border]="false" formControlName="received" />
             </th>
         </tr>
     </tfoot>

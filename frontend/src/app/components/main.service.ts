@@ -11,7 +11,7 @@ export abstract class MainService {
   private url = 'http://localhost:3000';
   private http = inject(HttpClient);
 
-  id = signal<number>(-1)
+  id = signal<number | undefined>(undefined)
   listReferesh = signal<string>('', { equal: () => false });
 
   get fullUrl() {
@@ -25,7 +25,7 @@ export abstract class MainService {
     }
   }));
 
-  one = httpResource<any>(() => `${this.fullUrl}/${this.id()}`);
+  one = httpResource<any>(() => this.id() ? `${this.fullUrl}/${this.id()}` : undefined);
 
   insert(data: any) {
     return this.http

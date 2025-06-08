@@ -1,85 +1,121 @@
-import { formatDate } from '@angular/common';
-import { Component, effect, EventEmitter, inject, Input, Output, signal, WritableSignal } from '@angular/core';
-import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, effect, EventEmitter, inject, input, Output, WritableSignal } from '@angular/core';
+import { AbstractControl, FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TextboxComponent } from "../../../components/textbox/textbox.component";
-import { WipeDirective } from '../../../components/utils/wipe.directive';
-import { ReconciliationService } from '../../reconciliation.service';
 import { NumberboxComponent } from "../../../components/numberbox/numberbox.component";
 import { ChangeRowsFormDirective } from '../../../salesreceipt/form/form.directive';
+import { ReceivableDirective } from './receivable.directive';
+import { CheckboxComponent } from "../../../components/checkbox/checkbox.component";
+import { ReconciliationTotalComponent } from "./total/total.component";
+import { ReconciliationTableFooterDirective } from './table-footer/table-footer.directive';
+import { ReceivableFormService } from './receivable.service';
+import { ReconciliationFormService } from '../form.service';
+import { ReconciliationService } from '../../reconciliation.service';
 
 @Component({
   selector: 'form-receivable',
-  imports: [ReactiveFormsModule, FormsModule, TextboxComponent, NumberboxComponent, ChangeRowsFormDirective],
+  imports: [ReactiveFormsModule, FormsModule, TextboxComponent, NumberboxComponent, ChangeRowsFormDirective, CheckboxComponent, ReconciliationTableFooterDirective],
   templateUrl: './receivable.component.html',
   styleUrl: './receivable.component.scss'
 })
-export class ReceivableFormComponent extends WipeDirective {
-  @Input() form!: FormGroup;
-  @Output() pick = new EventEmitter();
+export class ReceivableFormComponent {
+  @Output() selected = new EventEmitter();
+  @Output() totalE = new EventEmitter<number>();
 
-  service = inject(ReconciliationService);
+  reconciliationFormService = inject(ReconciliationFormService);
+  receivableFormService = inject(ReceivableFormService);
+
+  receipts: WritableSignal<any[] | undefined>;
+  indeterminate: WritableSignal<boolean>;
+  indeterminates: boolean[];
+  receivables: FormArray;
+
+  get form() {
+    return this.reconciliationFormService.form;
+  }
 
   constructor() {
-    super();
-    effect(() =>
-      this.receipts
-        ? this.setForm(this.receipts)
-        : null);
+    this.receivableFormService.receivables = this.form.get('receivables') as FormArray;
+    this.receivables = this.form.get('receivables') as FormArray;
+    this.receipts = this.reconciliationFormService.service.unclearedReceipts.value;
+    this.indeterminate = this.reconciliationFormService.indeterminate;
+    this.indeterminates = this.reconciliationFormService.indeterminates;
+
+    effect(() => this.init());
   }
 
-  getForm() {
-    const form = new FormGroup({
-      include: new FormControl(false),
-      receipt: new FormControl({ value: null, disabled: true }, Validators.required),
-      date: new FormControl({ value: null, disabled: true }),
-      due: new FormControl({ value: 0, disabled: true }),
-      received: new FormControl({ value: 0, disabled: true }, Validators.min(1))
-    });
+  init() {
+    const receipts = this.receipts()
+    if (!receipts) return;
 
-    this.listen(form);
-    return form;
+    this.receivableFormService.setForm(receipts);
+    this.reconciliationFormService.setIndeterminates(receipts);
   }
 
-  listen(form: FormGroup) {
-    const include = form.get('include')!
-      .valueChanges
-      .subscribe((v) => {
-        console.log('hello world')
-        this.pick.emit(v)
+  select(form: AbstractControl) {
+    const { received } = (<FormGroup>form).controls;
+    const { include, due } = form.getRawValue();
+
+    this.reconciliationFormService.setValue(received, include ? due : 0);
+    this.selected.emit(false);
+  }
+  selectAll(value: boolean) {
+    const controls = this.receivableFormService.receivables.controls as FormGroup[];
+
+    if (!value)
+      this.resetReceivables(controls);
+    else
+      controls.forEach((form) =>
+        this.reconciliationFormService.patchValue(form, {
+          include: true,
+          received: form.get('due')?.value
+        }));
+
+    this.selected.emit(true);
+  }
+
+  onTotalReceived(value: number) {
+    value = +value;
+
+    const controls = this.receivableFormService.receivables.controls as FormGroup[];
+
+    this.resetReceivables(controls);
+    this.resetIndeterminates();
+    this.setReceivableAmounts(controls, value);
+  }
+
+  resetReceivables(controls: FormGroup[]) {
+    controls.forEach((form) =>
+      this.reconciliationFormService.patchValue(form, {
+        include: false,
+        received: 0
+      }));
+  }
+
+  setReceivableAmounts(controls: FormGroup[], value: number) {
+    this.totalE.emit(value);
+
+    if (value <= 0) return;
+
+    for (const [index, form] of controls.entries()) {
+      const due = +form.get('due')?.value;
+
+      this.reconciliationFormService.patchValue(form, {
+        include: value < due ? false : true,
+        received: value <= due ? value : due
       });
 
-    this.subscriptions.push(include);
+      if (value < due)
+        this.reconciliationFormService.indeterminates[index] = true;
+
+      if (value <= due)
+        break;
+
+      value -= due;
+    }
   }
 
-  setForm(receipts: any[]) {
-    this.receivables.clear();
-    receipts.forEach(r => {
-      const form = this.getForm();
-      const { receipt, date, due } = form.controls;
-
-      receipt.setValue(r.id);
-      date.setValue(formatDate(r.date, 'MMM d, yyyy', 'en') as any);
-      due.setValue(r.amounts.due);
-
-      this.receivables.push(form);
-    });
-
-    this.setTotal();
-  }
-
-  setTotal() {
-    const values: any[] = this.receivables.getRawValue();
-    const due = this.form.get('total')!.get('due')!;
-
-    const sum = values.reduce((sum, { due }) => sum + +due, 0);
-
-    due.setValue(sum, { emitEvent: false });
-  }
-
-  get receivables() {
-    return this.form.get('receivables') as FormArray;
-  }
-  get receipts() {
-    return this.service.unclearedReceipts.value();
+  resetIndeterminates() {
+    for (let i = 0; i < this.reconciliationFormService.indeterminates.length; i++)
+      this.reconciliationFormService.indeterminates[i] = false;
   }
 }

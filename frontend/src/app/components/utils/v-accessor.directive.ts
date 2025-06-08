@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 
 @Directive({
@@ -7,6 +7,7 @@ import { ControlValueAccessor } from '@angular/forms';
 export class VAccessorDirective implements ControlValueAccessor {
   @Input() caption!: string;
   @Input() border = true;
+  @Output() changes = new EventEmitter<any>();
 
   disabled: boolean = false;
   value: string | null = null;
@@ -24,5 +25,6 @@ export class VAccessorDirective implements ControlValueAccessor {
 
     this.change(this.value);
     this.touched();
+    this.changes.emit(this.value);
   }
 }
