@@ -1,8 +1,8 @@
-<table [formGroup]="form">
+<table total selection (indeterminateE)="indeterminateChange($event)" [formGroup]="form">
     <thead>
         <tr>
             <td>
-                <checkbox (changes)="selectAll($event)" formControlName="includeAll"
+                <checkbox (changes)="selectAllChange($event)" formControlName="includeAll"
                     [indeterminate]="indeterminate()" />
             </td>
             <th>Date</th>
@@ -14,7 +14,8 @@
         @for(r of receivables.controls; track r){
         <tr [formGroupName]="$index">
             <td>
-                <checkbox (changes)="select(r)" formControlName="include" [indeterminate]="indeterminates[$index]" />
+                <checkbox (changes)="selectionChange($event,r)" formControlName="include"
+                    [indeterminate]="indeterminates()[$index]" />
             </td>
             <td>
                 <textbox [border]="false" formControlName="date" />
@@ -28,15 +29,14 @@
         </tr>
         }
     </tbody>
-    <tfoot [reconciliationTFoot]="form">
-        <!-- <reconciliation-total [form]="form" /> -->
+    <tfoot>
         <tr formGroupName="total">
             <th>total</th>
             <th>
                 <numberbox [border]="false" formControlName="due" />
             </th>
             <th>
-                <numberbox #received [border]="false" formControlName="received" />
+                <numberbox (changes)="totalReceivedChanged($event)" [border]="false" formControlName="received" />
             </th>
         </tr>
     </tfoot>

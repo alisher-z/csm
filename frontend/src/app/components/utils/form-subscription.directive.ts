@@ -1,6 +1,6 @@
 import { Directive } from '@angular/core';
 import { WipeDirective } from './wipe.directive';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 
 @Directive({
   selector: '[appFormSubscription]'
@@ -8,8 +8,15 @@ import { FormGroup } from '@angular/forms';
 export abstract class FormSubscriptionDirective extends WipeDirective {
   abstract form: FormGroup;
 
-  sub(label: string, cb: (v: any) => void) {
-    const control = this.form.get(label);
+  sub(label: string | string[], cb: (v: any) => void) {
+    let control: AbstractControl | undefined | null = this.form;
+
+    if (typeof label === 'string')
+      control = control.get(label);
+
+    else
+      for (const l of label)
+        control = control?.get(l);
 
     if (!control) return;
 
